@@ -18,7 +18,7 @@ void main(void)
 
 	while (1){
 		uart_tx(uart, a, sizeof(a), 10000);
-		printk("hello world!\r\n");
+		// printk("hello world!\r\n");
 		NRFX_DELAY_US(2000000);
 	}
 	
