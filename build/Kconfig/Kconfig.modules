@@ -1,0 +1,96 @@
+menu "nrf (C:/Users/Thomas/ncs/v1.9.1/nrf)"
+osource "C:/Users/Thomas/ncs/v1.9.1/nrf/Kconfig.nrf"
+config ZEPHYR_NRF_MODULE
+	bool
+	default y
+endmenu
+menu "mcuboot (C:/Users/Thomas/ncs/v1.9.1/bootloader/mcuboot)"
+osource "$(ZEPHYR_MCUBOOT_KCONFIG)"
+config ZEPHYR_MCUBOOT_MODULE
+	bool
+	default y
+endmenu
+menu "mbedtls (C:/Users/Thomas/ncs/v1.9.1/mbedtls)"
+osource "$(ZEPHYR_MBEDTLS_KCONFIG)"
+config ZEPHYR_MBEDTLS_MODULE
+	bool
+	default y
+endmenu
+menu "trusted-firmware-m (C:/Users/Thomas/ncs/v1.9.1/modules/tee/tf-m/trusted-firmware-m)"
+osource "$(ZEPHYR_TRUSTED_FIRMWARE_M_KCONFIG)"
+config ZEPHYR_TRUSTED_FIRMWARE_M_MODULE
+	bool
+	default y
+endmenu
+menu "cjson (C:/Users/Thomas/ncs/v1.9.1/modules/lib/cjson)"
+osource "$(ZEPHYR_CJSON_KCONFIG)"
+config ZEPHYR_CJSON_MODULE
+	bool
+	default y
+endmenu
+menu "cddl-gen (C:/Users/Thomas/ncs/v1.9.1/modules/lib/cddl-gen)"
+osource "$(ZEPHYR_CDDL_GEN_KCONFIG)"
+config ZEPHYR_CDDL_GEN_MODULE
+	bool
+	default y
+endmenu
+menu "memfault-firmware-sdk (C:/Users/Thomas/ncs/v1.9.1/modules/lib/memfault-firmware-sdk)"
+osource "C:/Users/Thomas/ncs/v1.9.1/modules/lib/memfault-firmware-sdk/ports/zephyr/Kconfig"
+config ZEPHYR_MEMFAULT_FIRMWARE_SDK_MODULE
+	bool
+	default y
+endmenu
+menu "CANopenNode (C:/Users/Thomas/ncs/v1.9.1/modules/lib/canopennode)"
+osource "$(ZEPHYR_CANOPENNODE_KCONFIG)"
+config ZEPHYR_CANOPENNODE_MODULE
+	bool
+	default y
+endmenu
+menu "hal_nordic (C:/Users/Thomas/ncs/v1.9.1/modules/hal/nordic)"
+osource "$(ZEPHYR_HAL_NORDIC_KCONFIG)"
+config ZEPHYR_HAL_NORDIC_MODULE
+	bool
+	default y
+endmenu
+menu "loramac-node (C:/Users/Thomas/ncs/v1.9.1/modules/lib/loramac-node)"
+osource "$(ZEPHYR_LORAMAC_NODE_KCONFIG)"
+config ZEPHYR_LORAMAC_NODE_MODULE
+	bool
+	default y
+endmenu
+menu "lz4 (C:/Users/Thomas/ncs/v1.9.1/modules/lib/lz4)"
+osource "$(ZEPHYR_LZ4_KCONFIG)"
+config ZEPHYR_LZ4_MODULE
+	bool
+	default y
+endmenu
+menu "mbedtls (C:/Users/Thomas/ncs/v1.9.1/modules/crypto/mbedtls)"
+osource "$(ZEPHYR_MBEDTLS_KCONFIG)"
+config ZEPHYR_MBEDTLS_MODULE
+	bool
+	default y
+endmenu
+menu "TraceRecorder (C:/Users/Thomas/ncs/v1.9.1/modules/debug/TraceRecorder)"
+osource "C:/Users/Thomas/ncs/v1.9.1/modules/debug/TraceRecorder/kernelports/Zephyr/Kconfig"
+config ZEPHYR_TRACERECORDER_MODULE
+	bool
+	default y
+endmenu
+menu "zscilib (C:/Users/Thomas/ncs/v1.9.1/modules/lib/zscilib)"
+osource "C:/Users/Thomas/ncs/v1.9.1/modules/lib/zscilib/Kconfig.zscilib"
+config ZEPHYR_ZSCILIB_MODULE
+	bool
+	default y
+endmenu
+menu "nrfxlib (C:/Users/Thomas/ncs/v1.9.1/nrfxlib)"
+osource "C:/Users/Thomas/ncs/v1.9.1/nrfxlib/Kconfig.nrfxlib"
+config ZEPHYR_NRFXLIB_MODULE
+	bool
+	default y
+endmenu
+menu "connectedhomeip (C:/Users/Thomas/ncs/v1.9.1/modules/lib/matter)"
+osource "C:/Users/Thomas/ncs/v1.9.1/modules/lib/matter/config/nrfconnect/chip-module/Kconfig"
+config ZEPHYR_CONNECTEDHOMEIP_MODULE
+	bool
+	default y
+endmenu

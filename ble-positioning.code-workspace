@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "ble-positioning",
+			"path": "."
+		}
+	],
+	"settings": {
+		"nrf-connect.applications": [
+			"${workspaceFolder}"
+		]
+	}
+}
