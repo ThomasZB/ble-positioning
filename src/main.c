@@ -5,21 +5,20 @@
  */
 
 #include <zephyr.h>
-#include <sys/printk.h>
+#include "mybluetooth.h"
 #include "myuart.h"
 
 
 void main(void)
 {
-	unsigned char a[] = "hello world\r\n";
-
+	int err;
+	
 	NRFX_DELAY_US(1000000);
 	uart_init();
 
+	err = bt_enable(bt_ready_callback);
 	while (1){
-		uart_tx(uart, a, sizeof(a), 10000);
-		// printk("hello world!\r\n");
+		printk("hello world\r\n");
 		NRFX_DELAY_US(2000000);
 	}
-	
 }

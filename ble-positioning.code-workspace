@@ -11,6 +11,19 @@
 		],
 		"nrf-connect.boardRoots": [
 			"${workspaceFolder}"
-		]
+		],
+		"files.associations": {
+			"printk.h": "c",
+			"myuart.h": "c",
+			"array": "c",
+			"*.tcc": "c",
+			"fstream": "c",
+			"ostream": "c",
+			"ratio": "c",
+			"sstream": "c",
+			"streambuf": "c",
+			"typeinfo": "c",
+			"mybluetooth.h": "c"
+		}
 	}
 }

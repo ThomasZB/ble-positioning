@@ -8,5 +8,6 @@ project(my_test1)
 include_directories(inc)
 target_sources(app PRIVATE  
     src/main.c
-    src/myuart.c)
+    src/myuart.c
+    src/mybluetooth.c)
 
