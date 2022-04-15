@@ -23,7 +23,14 @@
 			"sstream": "c",
 			"streambuf": "c",
 			"typeinfo": "c",
-			"mybluetooth.h": "c"
+			"mybluetooth.h": "c",
+			"bluetooth.h": "c",
+			"log.h": "c",
+			"uart.h": "c",
+			"unordered_map": "c",
+			"istream": "c",
+			"numeric": "c",
+			"gap.h": "c"
 		}
 	}
 }

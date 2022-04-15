@@ -3,7 +3,6 @@
 /* 串口设备 */
 const struct device *uart;
 
-
 /**
  * @breif: 串口回调函数，目前没用
  * @param
@@ -15,7 +14,6 @@ static void uart_cb(const struct device *dev, struct uart_event *evt, void *user
 
 /**
  * @breif: 串口初始化
- * @param
  */
 int uart_init(void){
 	int err;
