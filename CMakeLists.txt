@@ -9,5 +9,7 @@ include_directories(inc)
 target_sources(app PRIVATE  
     src/main.c
     src/myuart.c
-    src/mybluetooth.c)
+    src/mybluetooth.c
+    src/uart_profile.c
+    src/myconn.c)
 
