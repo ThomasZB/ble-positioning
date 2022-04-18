@@ -5,6 +5,15 @@
 /* 蓝牙初始化完成标志 */
 uint8_t ble_had_been_inited = 0;
 
+static struct bt_conn *current_conn;
+static struct bt_conn *auth_conn;
+
+/* 连接相关回调函数注册 */
+BT_CONN_CB_DEFINE(conn_callbacks) = {
+	.connected    = connected_cb,
+	.disconnected = disconnected_cb,
+};
+
 
 /* 广播发送的信息 */
 static const struct bt_data ad[] = {
@@ -63,7 +72,7 @@ void bt_scan_enable(void){
  * @param adv_type 	：类型，被动扫描还是主动扫描（可以用来判断是广播数据还是扫描响应数据）
  * @param buf 		：接收的广播数据
  */
-static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
+void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 		    struct net_buf_simple *buf)
 {
 	static uint8_t name_buf[11] = {0};
@@ -75,5 +84,48 @@ static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type,
 				printk("rssi is: %d \r\n", rssi);
 			}
 		}
+	}
+}
+
+
+/**
+ * @brief 连接成功回调函数
+ * 
+ * @param conn 	:连接句柄
+ * @param err 	:连接错误
+ */
+void connected_cb(struct bt_conn *conn, uint8_t err)
+{
+
+	if (err) {
+		printk("Connection failed (err %u)", err);
+		return;
+	}
+
+	printk("Connected!!\r\n");
+
+	current_conn = bt_conn_ref(conn);
+}
+
+
+/**
+ * @brief 断开连接回调函数
+ * 
+ * @param conn 		:连接句柄
+ * @param reason 	:断开原因
+ */
+void disconnected_cb(struct bt_conn *conn, uint8_t reason)
+{
+
+	printk("Disconnected (reason %u)\r\n", reason);
+
+	if (auth_conn) {
+		bt_conn_unref(auth_conn);
+		auth_conn = NULL;
+	}
+
+	if (current_conn) {
+		bt_conn_unref(current_conn);
+		current_conn = NULL;
 	}
 }

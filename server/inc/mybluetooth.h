@@ -12,7 +12,9 @@ extern uint8_t ble_had_been_inited;
 
 void bt_scan_enable(void);
 void bt_advertising_start(void);
-static void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type, struct net_buf_simple *buf);
+void connected_cb(struct bt_conn *conn, uint8_t err);
+void disconnected_cb(struct bt_conn *conn, uint8_t reason);
+void scan_cb(const bt_addr_le_t *addr, int8_t rssi, uint8_t adv_type, struct net_buf_simple *buf);
 
 
 #endif
