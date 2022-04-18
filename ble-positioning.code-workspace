@@ -1,42 +1,19 @@
 {
 	"folders": [
 		{
-			"name": "ble-positioning",
-			"path": "."
+			"name": "locator",
+			"path": "locator"
+		},
+		{
+			"name": "server",
+			"path": "server"
 		}
 	],
 	"settings": {
 		"nrf-connect.applications": [
-			"${workspaceFolder}"
+			"${workspaceFolder}",
+			"${workspaceFolder:server}"
 		],
-		"nrf-connect.boardRoots": [
-			"${workspaceFolder}"
-		],
-		"files.associations": {
-			"printk.h": "c",
-			"myuart.h": "c",
-			"array": "c",
-			"*.tcc": "c",
-			"fstream": "c",
-			"ostream": "c",
-			"ratio": "c",
-			"sstream": "c",
-			"streambuf": "c",
-			"typeinfo": "c",
-			"mybluetooth.h": "c",
-			"bluetooth.h": "c",
-			"log.h": "c",
-			"uart.h": "c",
-			"unordered_map": "c",
-			"istream": "c",
-			"numeric": "c",
-			"gap.h": "c",
-			"random": "c",
-			"uuid.h": "c",
-			"uart_profile.h": "c",
-			"myconn.h": "c"
-		},
-		"nrf-connect.topdir": "${nrf-connect.sdk:1.9.1}",
-		"nrf-connect.toolchain.path": "${nrf-connect.toolchain:1.9.1}"
+		"nrf-connect.topdir": "${nrf-connect.sdk:1.9.1}"
 	}
 }
