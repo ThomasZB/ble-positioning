@@ -10,7 +10,6 @@
 static K_SEM_DEFINE(ble_init_ok, 0, 1);
 
 
-
 void main(void)
 {
 	int err;
@@ -26,7 +25,9 @@ void main(void)
 	k_sem_give(&ble_init_ok);
 	printk("ble init success!\r\n");
 	ble_had_been_inited = 1;
-	bt_scan_enable();
+
+	/* 开始广播 */
+	bt_advertising_start();
 	while (1){
 		printk("hello world\r\n");
 		NRFX_DELAY_US(2000000);

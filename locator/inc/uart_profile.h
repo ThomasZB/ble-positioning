@@ -1,7 +1,7 @@
 #ifndef __UART_PROFILE_H
 #define __UART_PROFILE_H
 
-#include <drivers/uart.h>
+#include "drivers/uart.h"
 #include "bluetooth/uuid.h"
 #include "bluetooth/gatt.h"
 
