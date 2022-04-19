@@ -2,7 +2,6 @@
 #include "uart_profile.h"
 #include "myuart.h"
 
-
 /* 蓝牙初始化完成标志 */
 bool scan_enabled = 0;
 uint8_t ble_had_been_inited = 0;
@@ -60,6 +59,24 @@ int bt_scan_enable(void){
 		scan_enabled = true;
 	}
 	return 0;
+}
+
+
+/**
+ * @brief 停止扫描
+ */
+void bt_scan_disable(void){
+	int err;
+
+	printk("Scan disable...\r\n");
+	err = bt_le_scan_stop();
+	if (err) {
+		printk("failed (err %d)\r\n", err);
+		return;
+	}
+	printk("Success.\r\n");
+	
+	scan_enabled = false;
 }
 
 
@@ -153,8 +170,13 @@ bool data_cb(struct bt_data *data, void *user_data)
 	}
 }
 
-
-static const char *phy2str(uint8_t phy)
+/**
+ * @brief ble协议显示
+ * 
+ * @param phy 			：传入参数，phy标志
+ * @return const char* 	：返回名称
+ */
+const char *phy2str(uint8_t phy)
 {
 	switch (phy) {
 	case 0: return "No packets";
@@ -165,18 +187,14 @@ static const char *phy2str(uint8_t phy)
 	}
 }
 
-static inline uint32_t adv_interval_to_ms(uint16_t interval)
-{
-	return interval * 5 / 4;
-}
 
 /**
- * @brief 扫描回调函数中如果匹配成功的回调函数
+ * @brief 扫描回调函数中如果匹配成功的回调函数（弱定义，此应用中将在direction_finding.c里面重定义）
  * 
  * @param info 	：广播设备的信息
  * @param buf	：广播发出的数据
  */
-void scan_filter_match_cb(const struct bt_le_scan_recv_info *info,
+__weak void scan_filter_match_cb(const struct bt_le_scan_recv_info *info,
 		      struct net_buf_simple *buf)
 {
 	char le_addr[BT_ADDR_LE_STR_LEN];

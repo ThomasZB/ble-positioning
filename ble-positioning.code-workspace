@@ -24,7 +24,10 @@
 			"zephyr.h": "c",
 			"myuart.h": "c",
 			"mybluetooth.h": "c",
-			"random": "c"
+			"random": "c",
+			"direction_finding.h": "c",
+			"*.tcc": "c",
+			"streambuf": "c"
 		}
 	}
 }

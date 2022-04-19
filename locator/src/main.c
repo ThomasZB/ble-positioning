@@ -6,6 +6,8 @@
 #include "mybluetooth.h"
 #include "myuart.h"
 #include "uart_profile.h"
+#include "direction_finding.h"
+
 
 void main(void)
 {
@@ -24,10 +26,26 @@ void main(void)
 
 	/* 使能扫描 */
 	scan_init();
-	bt_scan_enable();
 
+	/* 使能direction finding */
+	direction_finding_init();
+	
+
+	/* 开始AOD测量 */
 	while (1){
-		printk("hello world\r\n");
-		NRFX_DELAY_US(2000000);
+		/* 找到对应的AOD广播设备 */
+		bt_scan_enable();
+		wait_central_adv();
+
+		/* 进行同步 */
+		create_sync_handle();
+		wait_sync();
+
+		/* 接收CTE信息 */
+		enable_cte_rx();
+		
+		/* 停止一次采集，准备下次采集 */
+		bt_scan_disable();
+		wait_sync_lost();
 	}
 }

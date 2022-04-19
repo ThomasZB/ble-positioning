@@ -13,14 +13,27 @@
 extern bool scan_enabled;
 extern uint8_t ble_had_been_inited;
 
-
 void scan_init(void);
 int bt_scan_enable(void);
+void bt_scan_disable(void);
+const char *phy2str(uint8_t phy);
 bool data_cb(struct bt_data *data, void *user_data);
 void connected_cb(struct bt_conn *conn, uint8_t err);
 void disconnected_cb(struct bt_conn *conn, uint8_t reason);
 void scan_cb(const struct bt_le_scan_recv_info*, struct net_buf_simple*);
 void scan_filter_match_cb(const struct bt_le_scan_recv_info*, struct net_buf_simple*);
+
+
+/**
+ * @brief 将广播窗转化为ms
+ *
+ * @param interval 	：广播窗大小，单位0.625ms
+ * @return uint32_t ：广播窗大小，单位ms
+ */
+static inline uint32_t adv_interval_to_ms(uint16_t interval)
+{
+	return interval * 5 / 4;
+}
 
 
 #endif
