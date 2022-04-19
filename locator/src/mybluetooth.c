@@ -4,7 +4,9 @@
 
 
 /* 蓝牙初始化完成标志 */
+bool scan_enabled = 0;
 uint8_t ble_had_been_inited = 0;
+
 
 static struct bt_conn *current_conn;
 static struct bt_conn *auth_conn;
@@ -16,8 +18,9 @@ BT_CONN_CB_DEFINE(conn_callbacks) = {
 };
 
 /* 扫描相关回调函数初始化，注册在函数里面 */
-BT_SCAN_CB_INIT(scan_cb, scan_filter_match_cb, NULL,
-		NULL, NULL);
+static struct bt_le_scan_cb scan_callbacks = {
+	.recv = scan_cb,
+};
 
 /* 扫描参数 */
 const struct bt_le_scan_param my_scan_param = {
@@ -30,39 +33,31 @@ const struct bt_le_scan_param my_scan_param = {
 
 
 /**
- * @brief 初始化并开始扫描 
- * 
- * @return int :错误类型
+ * @brief 初始化扫描，主要是注册回调函数
+ */
+void scan_init(void){
+	/* 初始化扫描参数 */
+	printk("Scan callbacks register...\r\n");
+	bt_le_scan_cb_register(&scan_callbacks);
+	printk("success.\r\n");
+}
+
+/**
+ * @brief 如果没有开始扫描，则启动扫描
+ * 	
+ * @return int	：错误类型 
  */
 int bt_scan_enable(void){
 	int err;
-	/* 参数定义在函数内以节省空间 */
-	struct bt_scan_init_param scan_param_init = {
-		.connect_if_match = 0,
-	};
-	scan_param_init.scan_param = &my_scan_param;
-
-	/* 初始化扫描参数 */
-	bt_scan_init(&scan_param_init);
-	bt_scan_cb_register(&scan_cb);
-
-	/* 添加并启动过滤器 */
-	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_NAME, "ble_thomas");
-	if (err) {
-		printk("Scanning filters cannot be set (err %d)", err);
-		return err;
-	}
-	err = bt_scan_filter_enable(BT_SCAN_NAME_FILTER, true);
-	if (err) {
-		printk("Filters cannot be turned on (err %d)", err);
-		return err;
-	}
-
-	/* 开始扫描 */
-	bt_scan_start(BT_SCAN_TYPE_SCAN_PASSIVE);
-	if (err) {
-		printk("Starting scanning failed (err %d)\n", err);
-		return err;
+	if (!scan_enabled) {
+		printk("Start scanning...\r\n");
+		err = bt_le_scan_start(&my_scan_param, NULL);
+		if (err) {
+			printk("failed (err %d)\r\n", err);
+			return err;
+		}
+		printk("success\r\n");
+		scan_enabled = true;
 	}
 	return 0;
 }
@@ -78,7 +73,7 @@ void connected_cb(struct bt_conn *conn, uint8_t err)
 {
 
 	if (err) {
-		printk("Connection failed (err %u)", err);
+		printk("Connection failed (err %u)\r\n", err);
 		return;
 	}
 
@@ -111,19 +106,93 @@ void disconnected_cb(struct bt_conn *conn, uint8_t reason)
 }
 
 /**
- * @brief 扫描匹配成功的回调函数
+ * @brief 扫描的回调函数，这里我用该函数做过滤器
  * 
- * @param device_info 	: 设备信息
- * @param filter_match 	：匹配类型
- * @param connectable 	：是否可以连接
+ * @param info 	：广播设备信息（是否可连接、功率）
+ * @param buf 	：广播数据
  */
-void scan_filter_match_cb(struct bt_scan_device_info *device_info,
-			      struct bt_scan_filter_match *filter_match,
-			      bool connectable)
+void scan_cb(const struct bt_le_scan_recv_info *info,
+		      struct net_buf_simple *buf)
 {
-	char addr[BT_ADDR_LE_STR_LEN];
+	char name[PEER_NAME_LEN_MAX];
+	(void)memset(name, 0, sizeof(name));
 
-	bt_addr_le_to_str(device_info->recv_info->addr, addr, sizeof(addr));
+	/* 找到name数据 */
+	bt_data_parse(buf, data_cb, name);
 
-	printk("Filters matched. Address: %s connectable: %d", addr, connectable);
+	/* 比较name */
+	if (!strcmp(name, "ble_thomas")){
+		scan_filter_match_cb(info, buf);
+	}
+
 }
+
+
+/**
+ * @brief 匹配数据的回调函数，bt_data_parse函数将数据分块，回调函数解析这块数据
+ * 
+ * @param data 			：传入数据
+ * @param user_data 	：解析完毕保存数据
+ * @return true 		：成功
+ * @return false 		：失败
+ */
+bool data_cb(struct bt_data *data, void *user_data)
+{
+	char *name = user_data;
+	uint8_t len;
+
+	switch (data->type) {
+	case BT_DATA_NAME_SHORTENED:
+	case BT_DATA_NAME_COMPLETE:
+		len = MIN(data->data_len, PEER_NAME_LEN_MAX - 1);
+		memcpy(name, data->data, len);
+		name[len] = '\0';
+		return false;
+	default:
+		return true;
+	}
+}
+
+
+static const char *phy2str(uint8_t phy)
+{
+	switch (phy) {
+	case 0: return "No packets";
+	case BT_GAP_LE_PHY_1M: return "LE 1M";
+	case BT_GAP_LE_PHY_2M: return "LE 2M";
+	case BT_GAP_LE_PHY_CODED: return "LE Coded";
+	default: return "Unknown";
+	}
+}
+
+static inline uint32_t adv_interval_to_ms(uint16_t interval)
+{
+	return interval * 5 / 4;
+}
+
+/**
+ * @brief 扫描回调函数中如果匹配成功的回调函数
+ * 
+ * @param info 	：广播设备的信息
+ * @param buf	：广播发出的数据
+ */
+void scan_filter_match_cb(const struct bt_le_scan_recv_info *info,
+		      struct net_buf_simple *buf)
+{
+	char le_addr[BT_ADDR_LE_STR_LEN];
+	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
+
+	printk("[DEVICE]: %s, AD evt type %u, Tx Pwr: %i, RSSI %i C:%u S:%u "
+	       "D:%u SR:%u E:%u Prim: %s, Secn: %s, Interval: 0x%04x (%u ms), "
+	       "SID: %u\r\n",
+	       le_addr, info->adv_type, info->tx_power, info->rssi,
+	       (info->adv_props & BT_GAP_ADV_PROP_CONNECTABLE) != 0,
+	       (info->adv_props & BT_GAP_ADV_PROP_SCANNABLE) != 0,
+	       (info->adv_props & BT_GAP_ADV_PROP_DIRECTED) != 0,
+	       (info->adv_props & BT_GAP_ADV_PROP_SCAN_RESPONSE) != 0,
+	       (info->adv_props & BT_GAP_ADV_PROP_EXT_ADV) != 0, phy2str(info->primary_phy),
+	       phy2str(info->secondary_phy), info->interval, adv_interval_to_ms(info->interval),
+	       info->sid);
+}
+
+

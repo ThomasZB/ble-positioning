@@ -22,7 +22,9 @@
 			"bluetooth.h": "c",
 			"hci.h": "c",
 			"zephyr.h": "c",
-			"myuart.h": "c"
+			"myuart.h": "c",
+			"mybluetooth.h": "c",
+			"random": "c"
 		}
 	}
 }

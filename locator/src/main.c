@@ -7,10 +7,6 @@
 #include "myuart.h"
 #include "uart_profile.h"
 
-static K_SEM_DEFINE(ble_init_ok, 0, 1);
-
-
-
 void main(void)
 {
 	int err;
@@ -27,6 +23,7 @@ void main(void)
 	ble_had_been_inited = 1;
 
 	/* 使能扫描 */
+	scan_init();
 	bt_scan_enable();
 
 	while (1){
