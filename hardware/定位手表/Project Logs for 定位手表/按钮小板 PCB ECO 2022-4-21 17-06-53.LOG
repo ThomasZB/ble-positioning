@@ -1,0 +1,50 @@
+Added Component: Designator=J9(FPC0.5-WT-6P)
+Added Component: Designator=K2(Ðý×ª±àÂëÆ÷)
+Added Component: Designator=R13(0603-RES)
+Added Component: Designator=R14(0603-RES)
+Added Component: Designator=R15(0603-RES)
+Added Component: Designator=R16(0603-RES)
+Added Component: Designator=R17(0603-RES)
+Added Component: Designator=R18(0603-RES)
+Added Component: Designator=R19(0603-RES)
+Added Component: Designator=R20(0603-RES)
+Added Component: Designator=SW2(Çá´¥¿ª¹Ø)
+Added Pin To Net: NetName=3.3V Pin=J9-1
+Added Pin To Net: NetName=3.3V Pin=R14-1
+Added Pin To Net: NetName=3.3V Pin=R16-2
+Added Net: Name=3.3V
+Added Pin To Net: NetName=EC11-A Pin=J9-3
+Added Pin To Net: NetName=EC11-A Pin=R19-2
+Added Net: Name=EC11-A
+Added Pin To Net: NetName=EC11-B Pin=J9-4
+Added Pin To Net: NetName=EC11-B Pin=R20-2
+Added Net: Name=EC11-B
+Added Pin To Net: NetName=EC11-K Pin=J9-2
+Added Pin To Net: NetName=EC11-K Pin=R18-2
+Added Net: Name=EC11-K
+Added Pin To Net: NetName=GND Pin=J9-6
+Added Pin To Net: NetName=GND Pin=K2-D
+Added Pin To Net: NetName=GND Pin=K2-COM
+Added Net: Name=GND
+Added Pin To Net: NetName=KEY Pin=J9-5
+Added Pin To Net: NetName=KEY Pin=R17-2
+Added Net: Name=KEY
+Added Pin To Net: NetName=NetK2_A Pin=K2-A
+Added Pin To Net: NetName=NetK2_A Pin=R14-2
+Added Pin To Net: NetName=NetK2_A Pin=R19-1
+Added Net: Name=NetK2_A
+Added Pin To Net: NetName=NetK2_B Pin=K2-B
+Added Pin To Net: NetName=NetK2_B Pin=R15-2
+Added Pin To Net: NetName=NetK2_B Pin=R20-1
+Added Net: Name=NetK2_B
+Added Pin To Net: NetName=NetK2_E Pin=K2-E
+Added Pin To Net: NetName=NetK2_E Pin=R13-2
+Added Pin To Net: NetName=NetK2_E Pin=R18-1
+Added Net: Name=NetK2_E
+Added Pin To Net: NetName=NetR13_1 Pin=R13-1
+Added Pin To Net: NetName=NetR13_1 Pin=R15-1
+Added Net: Name=NetR13_1
+Added Pin To Net: NetName=NetR16_1 Pin=R16-1
+Added Pin To Net: NetName=NetR16_1 Pin=R17-1
+Added Pin To Net: NetName=NetR16_1 Pin=SW2-1
+Added Net: Name=NetR16_1

@@ -50,7 +50,7 @@ PrefsRevisionGUID=
 
 [Document1]
 DocumentPath=定位手表.SchDoc
-AnnotationEnabled=1
+AnnotationEnabled=0
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -152,7 +152,7 @@ DocumentUniqueId=TWFJYCBR
 
 [Document7]
 DocumentPath=按钮小板.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -183,6 +183,10 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=UNWGLWKV
+
+[GeneratedDocument1]
+DocumentPath=Project Outputs for 定位手表\Design Rule Check - 定位手表.html
+DItemRevisionGUID=
 
 [Configuration1]
 Name=Sources
