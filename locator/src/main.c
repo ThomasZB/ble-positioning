@@ -33,8 +33,13 @@ void main(void)
 
 	/* 开始AOD测量 */
 	while (1){
-		/* 找到对应的AOD广播设备 */
+		/* 使能扫描，每周期留5ms进行连接扫描 */
 		bt_scan_enable();
+		is_aod_measuring = 0;
+		NRFX_DELAY_US(5000);
+		
+		/* 找到对应的AOD广播设备 */
+		is_aod_measuring = 1;
 		wait_central_adv();
 
 		/* 进行同步 */

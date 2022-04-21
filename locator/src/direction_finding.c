@@ -16,7 +16,9 @@ static struct bt_le_per_adv_sync *sync_handle;
 
 static uint8_t per_sid;
 static bt_addr_le_t per_addr;
+uint8_t is_aod_measuring = 0;
 static uint32_t sync_create_timeout_ms;
+
 
 
 void direction_finding_init(void){
@@ -170,36 +172,27 @@ static const char *packet_status2str(uint8_t status)
 
 
 /**
- * @brief 
+ * @brief 没有匹配的回调函数，即不是连接对象，进行判断是否是周期广播信号（进行定位）
  * 
- * @param info 
- * @param buf 
+ * @param device_info 	：广播设备信息
+ * @param connectable 	：是否可连接
  */
-void scan_filter_match_cb(const struct bt_le_scan_recv_info *info,
-		      struct net_buf_simple *buf)
+void scan_filter_not_match_cb(struct bt_scan_device_info *device_info,
+				bool connectable)
 {
 	char le_addr[BT_ADDR_LE_STR_LEN];
-	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
+	bt_addr_le_to_str(device_info->recv_info->addr, le_addr, sizeof(le_addr));
 
     /* 打印信息 */
-	printk("[DEVICE]: %s, AD evt type %u, Tx Pwr: %i, RSSI %i C:%u S:%u "
-	       "D:%u SR:%u E:%u ,  "
-	       "SID: %u\r\n",
-	       le_addr, info->adv_type, info->tx_power, info->rssi,
-	       (info->adv_props & BT_GAP_ADV_PROP_CONNECTABLE) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_SCANNABLE) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_DIRECTED) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_SCAN_RESPONSE) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_EXT_ADV) != 0,
-	       info->sid);
+	printk("[DEVICE]: %s, RSSI %i, connectable: %d \r\n", le_addr, device_info->recv_info->rssi, connectable);
 
     /* 找到周期广播信号 */
-    if (!per_adv_found && info->interval) {
+    if (!per_adv_found && device_info->recv_info->interval) {
 		sync_create_timeout_ms =
-			adv_interval_to_ms(info->interval) * SYNC_CREATE_TIMEOUT_INTERVAL_NUM;
+			adv_interval_to_ms(device_info->recv_info->interval) * SYNC_CREATE_TIMEOUT_INTERVAL_NUM;
 		per_adv_found = true;
-		per_sid = info->sid;
-		bt_addr_le_copy(&per_addr, info->addr);
+		per_sid = device_info->recv_info->sid;
+		bt_addr_le_copy(&per_addr, device_info->recv_info->addr);
 
         /* 发送信号 */
 		k_sem_give(&sem_per_adv);

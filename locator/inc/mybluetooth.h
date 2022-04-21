@@ -13,15 +13,16 @@
 extern bool scan_enabled;
 extern uint8_t ble_had_been_inited;
 
-void scan_init(void);
+int scan_init(void);
 int bt_scan_enable(void);
-void bt_scan_disable(void);
+int bt_scan_disable(void);
 const char *phy2str(uint8_t phy);
 bool data_cb(struct bt_data *data, void *user_data);
 void connected_cb(struct bt_conn *conn, uint8_t err);
+void scan_connecting_error_cb(struct bt_scan_device_info*);
 void disconnected_cb(struct bt_conn *conn, uint8_t reason);
-void scan_cb(const struct bt_le_scan_recv_info*, struct net_buf_simple*);
-void scan_filter_match_cb(const struct bt_le_scan_recv_info*, struct net_buf_simple*);
+void scan_connecting_cb(struct bt_scan_device_info*, struct bt_conn*);
+void scan_filter_match_cb(struct bt_scan_device_info*, struct bt_scan_filter_match *, bool);
 
 
 /**

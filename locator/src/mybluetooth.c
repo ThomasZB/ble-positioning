@@ -1,6 +1,8 @@
+#include "direction_finding.h"
 #include "mybluetooth.h"
 #include "uart_profile.h"
 #include "myuart.h"
+
 
 /* 蓝牙初始化完成标志 */
 bool scan_enabled = 0;
@@ -8,7 +10,6 @@ uint8_t ble_had_been_inited = 0;
 
 
 static struct bt_conn *current_conn;
-static struct bt_conn *auth_conn;
 
 /* 连接相关回调函数注册 */
 BT_CONN_CB_DEFINE(conn_callbacks) = {
@@ -17,9 +18,8 @@ BT_CONN_CB_DEFINE(conn_callbacks) = {
 };
 
 /* 扫描相关回调函数初始化，注册在函数里面 */
-static struct bt_le_scan_cb scan_callbacks = {
-	.recv = scan_cb,
-};
+BT_SCAN_CB_INIT(scan_callbacks, scan_filter_match_cb, NULL,
+		scan_connecting_error_cb, scan_connecting_cb);
 
 /* 扫描参数 */
 const struct bt_le_scan_param my_scan_param = {
@@ -28,17 +28,41 @@ const struct bt_le_scan_param my_scan_param = {
 	.interval   = 0x00A0,
 	.window     = 0x0050,
 };
+struct bt_scan_init_param my_scan_init_param = {
+		.scan_param = &my_scan_param,
+		.connect_if_match = 1,
+};
 
 
 
 /**
- * @brief 初始化扫描，主要是注册回调函数
+ * @brief 初始化扫描，主要是注册回调函数和过滤器初始化
+ * 
+ * @return int	：错误类型 
  */
-void scan_init(void){
-	/* 初始化扫描参数 */
-	printk("Scan callbacks register...\r\n");
-	bt_le_scan_cb_register(&scan_callbacks);
-	printk("success.\r\n");
+int scan_init(void){
+	int err;
+
+	/* 初始化扫描参数，回调函数 */
+	bt_scan_init(&my_scan_init_param);
+	bt_scan_cb_register(&scan_callbacks);
+
+	/* 添加过滤器 */
+	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_NAME, "ble_thomas");
+	if (err) {
+		printk("Scanning filters cannot be set (err %d)\r\n", err);
+		return err;
+	}
+	
+	/* 使能过滤器 */
+	err = bt_scan_filter_enable(BT_SCAN_NAME_FILTER, true);
+	if (err) {
+		printk("Filters cannot be turned on (err %d)\r\n", err);
+		return err;
+	}
+
+	printk("Scan module initialized\r\n");
+	return 0;
 }
 
 /**
@@ -48,15 +72,17 @@ void scan_init(void){
  */
 int bt_scan_enable(void){
 	int err;
+	
 	if (!scan_enabled) {
 		printk("Start scanning...\r\n");
-		err = bt_le_scan_start(&my_scan_param, NULL);
+		/* 开始扫描 */
+		err = bt_scan_start(BT_SCAN_TYPE_SCAN_ACTIVE);
 		if (err) {
-			printk("failed (err %d)\r\n", err);
+			printk("Starting scanning failed (err %d)\r\n", err);
 			return err;
 		}
-		printk("success\r\n");
 		scan_enabled = true;
+		printk("Scanning successfully started!\r\n");
 	}
 	return 0;
 }
@@ -64,19 +90,22 @@ int bt_scan_enable(void){
 
 /**
  * @brief 停止扫描
+ * 
+ * @return int	：错误类型 
  */
-void bt_scan_disable(void){
+int bt_scan_disable(void){
 	int err;
 
 	printk("Scan disable...\r\n");
-	err = bt_le_scan_stop();
+	err = bt_scan_stop();
 	if (err) {
 		printk("failed (err %d)\r\n", err);
-		return;
+		return err;
 	}
 	printk("Success.\r\n");
 	
 	scan_enabled = false;
+	return 0;
 }
 
 
@@ -88,15 +117,18 @@ void bt_scan_disable(void){
  */
 void connected_cb(struct bt_conn *conn, uint8_t err)
 {
-
 	if (err) {
 		printk("Connection failed (err %u)\r\n", err);
 		return;
 	}
-
 	printk("Connected!!\r\n");
+	/* 关闭自动连接 */
+	my_scan_init_param.connect_if_match = false;
+	bt_scan_disable();
+	bt_scan_init(&my_scan_init_param);
 
-	current_conn = bt_conn_ref(conn);
+	/* 初始化连接参数 */
+	
 }
 
 
@@ -108,41 +140,11 @@ void connected_cb(struct bt_conn *conn, uint8_t err)
  */
 void disconnected_cb(struct bt_conn *conn, uint8_t reason)
 {
-
 	printk("Disconnected (reason %u)\r\n", reason);
-
-	if (auth_conn) {
-		bt_conn_unref(auth_conn);
-		auth_conn = NULL;
-	}
-
-	if (current_conn) {
-		bt_conn_unref(current_conn);
-		current_conn = NULL;
-	}
+	bt_conn_unref(current_conn);
+	current_conn = NULL;
 }
 
-/**
- * @brief 扫描的回调函数，这里我用该函数做过滤器
- * 
- * @param info 	：广播设备信息（是否可连接、功率）
- * @param buf 	：广播数据
- */
-void scan_cb(const struct bt_le_scan_recv_info *info,
-		      struct net_buf_simple *buf)
-{
-	char name[PEER_NAME_LEN_MAX];
-	(void)memset(name, 0, sizeof(name));
-
-	/* 找到name数据 */
-	bt_data_parse(buf, data_cb, name);
-
-	/* 比较name */
-	if (!strcmp(name, "ble_thomas")){
-		scan_filter_match_cb(info, buf);
-	}
-
-}
 
 
 /**
@@ -191,26 +193,40 @@ const char *phy2str(uint8_t phy)
 /**
  * @brief 扫描回调函数中如果匹配成功的回调函数（弱定义，此应用中将在direction_finding.c里面重定义）
  * 
- * @param info 	：广播设备的信息
- * @param buf	：广播发出的数据
+ * @param device_info 
+ * @param filter_match 
+ * @param connectable 
  */
-__weak void scan_filter_match_cb(const struct bt_le_scan_recv_info *info,
-		      struct net_buf_simple *buf)
+__weak void scan_filter_match_cb(struct bt_scan_device_info *device_info,
+			      struct bt_scan_filter_match *filter_match,
+			      bool connectable)
 {
 	char le_addr[BT_ADDR_LE_STR_LEN];
-	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
+	bt_addr_le_to_str(device_info->recv_info->addr, le_addr, sizeof(le_addr));
 
-	printk("[DEVICE]: %s, AD evt type %u, Tx Pwr: %i, RSSI %i C:%u S:%u "
-	       "D:%u SR:%u E:%u Prim: %s, Secn: %s, Interval: 0x%04x (%u ms), "
-	       "SID: %u\r\n",
-	       le_addr, info->adv_type, info->tx_power, info->rssi,
-	       (info->adv_props & BT_GAP_ADV_PROP_CONNECTABLE) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_SCANNABLE) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_DIRECTED) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_SCAN_RESPONSE) != 0,
-	       (info->adv_props & BT_GAP_ADV_PROP_EXT_ADV) != 0, phy2str(info->primary_phy),
-	       phy2str(info->secondary_phy), info->interval, adv_interval_to_ms(info->interval),
-	       info->sid);
+	printk("[DEVICE]: %s, RSSI %i, connectable: %d \r\n", le_addr, device_info->recv_info->rssi, connectable);
+}
+
+/**
+ * @brief 连接失败回调函数
+ * 
+ * @param device_info 
+ */
+void scan_connecting_error_cb(struct bt_scan_device_info *device_info)
+{
+	printk("Connecting failed");
+}
+
+
+/**
+ * @brief 连接成功回调函数
+ * 
+ * @param device_info 
+ */
+void scan_connecting_cb(struct bt_scan_device_info *device_info,
+			    struct bt_conn *conn)
+{
+	current_conn = bt_conn_ref(conn);
 }
 
 
