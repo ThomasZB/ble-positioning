@@ -1,3 +1,13 @@
+/**
+ * @file myuart.c
+ * @author hang chen (thomaszb.cn)
+ * @brief 
+ * @version 0.1
+ * @date 2022-04-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "myuart.h"
 
 /* 串口设备 */

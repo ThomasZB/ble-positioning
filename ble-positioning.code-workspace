@@ -16,18 +16,21 @@
 		],
 		"nrf-connect.topdir": "${nrf-connect.sdk:1.9.1}",
 		"files.associations": {
-			"conn.h": "c",
-			"UART_PROFILE.H": "cpp",
-			"uart.h": "c",
-			"bluetooth.h": "c",
-			"hci.h": "c",
-			"zephyr.h": "c",
-			"myuart.h": "c",
-			"mybluetooth.h": "c",
-			"random": "c",
-			"direction_finding.h": "c",
-			"*.tcc": "c",
-			"streambuf": "c"
-		}
+            "conn.h": "c",
+            "UART_PROFILE.H": "cpp",
+            "uart.h": "c",
+            "bluetooth.h": "c",
+            "hci.h": "c",
+            "zephyr.h": "c",
+            "myuart.h": "c",
+            "mybluetooth.h": "c",
+            "random": "c",
+            "direction_finding.h": "c",
+            "*.tcc": "c",
+            "streambuf": "c",
+            "kernel.h": "c",
+            "uart_client.h": "c",
+            "nus.h": "c"
+        }
 	}
 }

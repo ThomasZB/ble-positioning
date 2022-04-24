@@ -1,15 +1,26 @@
+/**
+ * @file mybluetooth.c
+ * @author hang chen (thomaszb.cn)
+ * @brief 
+ * @version 0.1
+ * @date 2022-04-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "direction_finding.h"
 #include "mybluetooth.h"
-#include "uart_profile.h"
 #include "myuart.h"
+#include "uart_client.h"
+#include "bluetooth/services/nus.h"
 
 
 /* 蓝牙初始化完成标志 */
 bool scan_enabled = 0;
 uint8_t ble_had_been_inited = 0;
 
-
-static struct bt_conn *current_conn;
+/* 连接句柄 */
+struct bt_conn *current_conn = NULL;
 
 /* 连接相关回调函数注册 */
 BT_CONN_CB_DEFINE(conn_callbacks) = {
@@ -21,9 +32,16 @@ BT_CONN_CB_DEFINE(conn_callbacks) = {
 BT_SCAN_CB_INIT(scan_callbacks, scan_filter_match_cb, NULL,
 		scan_connecting_error_cb, scan_connecting_cb);
 
+/* 服务发现回调函数 */
+const struct bt_gatt_dm_cb discovery_cb = {
+	.completed         = discovery_complete_cb,
+	.service_not_found = discovery_service_not_found_cb,
+	.error_found       = discovery_error_cb,
+};
+
 /* 扫描参数 */
 const struct bt_le_scan_param my_scan_param = {
-	.type       = BT_HCI_LE_SCAN_PASSIVE,
+	.type       = BT_HCI_LE_SCAN_ACTIVE,
 	.options    = BT_LE_SCAN_OPT_NONE,
 	.interval   = 0x00A0,
 	.window     = 0x0050,
@@ -32,7 +50,6 @@ struct bt_scan_init_param my_scan_init_param = {
 		.scan_param = &my_scan_param,
 		.connect_if_match = 1,
 };
-
 
 
 /**
@@ -65,6 +82,7 @@ int scan_init(void){
 	return 0;
 }
 
+
 /**
  * @brief 如果没有开始扫描，则启动扫描
  * 	
@@ -96,13 +114,12 @@ int bt_scan_enable(void){
 int bt_scan_disable(void){
 	int err;
 
-	printk("Scan disable...\r\n");
 	err = bt_scan_stop();
-	if (err) {
+	if ((!err) && (err != -EALREADY)) {
 		printk("failed (err %d)\r\n", err);
 		return err;
 	}
-	printk("Success.\r\n");
+	printk("Scan disabled.\r\n");
 	
 	scan_enabled = false;
 	return 0;
@@ -110,7 +127,29 @@ int bt_scan_disable(void){
 
 
 /**
- * @brief 连接成功回调函数
+ * @brief 开始寻找服务
+ * 
+ * @param conn 	：连接句柄
+ */
+void gatt_service_discover(struct bt_conn *conn)
+{
+	int err;
+
+	if (conn != current_conn) {
+		return;
+	}
+
+	err = bt_gatt_dm_start(conn, BT_UUID_NUS_SERVICE, &discovery_cb, NULL);
+
+	if (err) {
+		printk("could not start the discovery procedure, error "
+			"code: %d\r\n", err);
+	}
+}
+
+
+/**
+ * @brief 连接成功回调函数，在该函数中进行连接参数的更行
  * 
  * @param conn 	:连接句柄
  * @param err 	:连接错误
@@ -122,13 +161,41 @@ void connected_cb(struct bt_conn *conn, uint8_t err)
 		return;
 	}
 	printk("Connected!!\r\n");
-	/* 关闭自动连接 */
-	my_scan_init_param.connect_if_match = false;
-	bt_scan_disable();
-	bt_scan_init(&my_scan_init_param);
 
-	/* 初始化连接参数 */
+	/**************** 初始化连接参数 ****************/
+	static struct bt_gatt_exchange_params exchange_params;
+	/* mtu交换 */
+	exchange_params.func = mtu_exchange_cb;
+	err = bt_gatt_exchange_mtu(conn, &exchange_params);
+	if (err) {
+		printk("MTU exchange failed (err %d)\r\n", err);
+	}
+	printk("MTU exchange succeed\r\n");
 	
+	gatt_service_discover(conn);
+
+	/* 关闭自动连接 */
+	bt_scan_disable();
+	if (err){
+		printk("Stop failed (%d) \r\n", err);
+	}
+}
+
+
+/**
+ * @brief mtu交换的回调函数
+ * 
+ * @param conn 		：连接句柄
+ * @param err 		：交换结果
+ * @param params 	：交换的回调函数
+ */
+void mtu_exchange_cb(struct bt_conn *conn, uint8_t err, struct bt_gatt_exchange_params *params)
+{
+	if (!err) {
+		printk("MTU exchange done\r\n");
+	} else {
+		printk("MTU exchange failed (err %" PRIu8 ")\r\n", err);
+	}
 }
 
 
@@ -144,7 +211,6 @@ void disconnected_cb(struct bt_conn *conn, uint8_t reason)
 	bt_conn_unref(current_conn);
 	current_conn = NULL;
 }
-
 
 
 /**
@@ -171,6 +237,7 @@ bool data_cb(struct bt_data *data, void *user_data)
 		return true;
 	}
 }
+
 
 /**
  * @brief ble协议显示
@@ -207,6 +274,7 @@ __weak void scan_filter_match_cb(struct bt_scan_device_info *device_info,
 	printk("[DEVICE]: %s, RSSI %i, connectable: %d \r\n", le_addr, device_info->recv_info->rssi, connectable);
 }
 
+
 /**
  * @brief 连接失败回调函数
  * 
@@ -214,7 +282,7 @@ __weak void scan_filter_match_cb(struct bt_scan_device_info *device_info,
  */
 void scan_connecting_error_cb(struct bt_scan_device_info *device_info)
 {
-	printk("Connecting failed");
+	printk("Connecting failed\r\n");
 }
 
 
@@ -230,3 +298,70 @@ void scan_connecting_cb(struct bt_scan_device_info *device_info,
 }
 
 
+/**
+ * @brief 切换为连接模式，找到对应设备并建立连接
+ * 
+ */
+void bt_switch_conn(void){
+	/* 打开自动连接 */
+	printk("switch to connected mode\r\n");
+	bt_scan_conn_modify(true);
+}
+
+
+/**
+ * @brief 切换为扫描CTE模式，不进行连接
+ * 
+ * @return int ：切换是否成功
+ */
+void bt_switch_df(void){
+	/* 关闭自动连接 */
+	printk("switch to direction finding mode... \r\n");
+	bt_scan_conn_modify(false);
+}
+
+
+/**
+ * @brief 服务发现成功回到函数
+ * 
+ * @param dm 		：服务发现句柄
+ * @param context 	：传入参数
+ */
+void discovery_complete_cb(struct bt_gatt_dm *dm,
+			       void *context)
+{
+	printk("Service discovery completed\r\n");
+	
+	get_uart_service(dm);
+    bt_uart_subscribe_receive();
+
+    bt_gatt_dm_data_release(dm);
+}
+
+
+/**
+ * @brief 服务发现未找到服务回调函数
+ * 
+ * @param conn 		：连接句柄
+ * @param context 	：传入参数
+ */
+void discovery_service_not_found_cb(struct bt_conn *conn,
+					void *context)
+{
+	printk("Service not found\r\n");
+}
+
+
+/**
+ * @brief 服务发现错误回调函数
+ * 
+ * @param conn 		：连接句柄
+ * @param err 		：出错类型
+ * @param context 	：传入参数
+ */
+void discovery_error_cb(struct bt_conn *conn,
+			    int err,
+			    void *context)
+{
+	printk("Error while discovering GATT database: (%d)\r\n", err);
+}

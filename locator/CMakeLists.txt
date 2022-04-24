@@ -10,6 +10,6 @@ target_sources(app PRIVATE
     src/main.c
     src/myuart.c
     src/mybluetooth.c
-    src/uart_profile.c
+    src/uart_client.c
     src/direction_finding.c)
 

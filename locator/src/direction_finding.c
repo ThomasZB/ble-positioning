@@ -1,7 +1,16 @@
+/**
+ * @file direction_finding.c
+ * @author hang chen (thomaszb.cn)
+ * @brief AOD定位的源文件
+ * @version 0.1
+ * @date 2022-04-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "direction_finding.h"
 #include "mybluetooth.h"
 #include "bluetooth/hci.h"
-#include "bluetooth/scan.h"
 #include "myuart.h"
 
 /* 定义信号量 */
@@ -16,7 +25,6 @@ static struct bt_le_per_adv_sync *sync_handle;
 
 static uint8_t per_sid;
 static bt_addr_le_t per_addr;
-uint8_t is_aod_measuring = 0;
 static uint32_t sync_create_timeout_ms;
 
 

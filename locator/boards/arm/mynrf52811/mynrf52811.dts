@@ -22,9 +22,6 @@
 	tx-pin = <29>;
 	rx-pin = <30>;
 	rx-pull-up;
-   //  rts-pin = <2>;
-   //  cts-pin = <31>;
-   //  cts-pull-up;
 };
 
 

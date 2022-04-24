@@ -1,13 +1,24 @@
+/**
+ * @file direction_finding.h
+ * @author hang chen (thomaszb.cn)
+ * @brief 
+ * @version 0.1
+ * @date 2022-04-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #ifndef __DIRECTION_FINDING_H
 #define __DIRECTION_FINDING_H
 
+#include "bluetooth/scan.h"
 #include "bluetooth/bluetooth.h"
+
 
 
 #define SYNC_CREATE_TIMEOUT_INTERVAL_NUM 7
 #define MY_GAP_ADV_MAX_DATA_LEN 200
 
-extern uint8_t is_aod_measuring;
 
 
 int wait_sync(void);

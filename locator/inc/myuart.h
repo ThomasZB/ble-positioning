@@ -1,3 +1,13 @@
+/**
+ * @file myuart.h
+ * @author hang chen (thomaszb.cn)
+ * @brief 
+ * @version 0.1
+ * @date 2022-04-23
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #ifndef __MYUART_H
 #define __MYUART_H
 
