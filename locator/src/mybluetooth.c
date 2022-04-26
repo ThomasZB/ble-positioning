@@ -271,7 +271,7 @@ __weak void scan_filter_match_cb(struct bt_scan_device_info *device_info,
 	char le_addr[BT_ADDR_LE_STR_LEN];
 	bt_addr_le_to_str(device_info->recv_info->addr, le_addr, sizeof(le_addr));
 
-	printk("[DEVICE]: %s, RSSI %i, connectable: %d \r\n", le_addr, device_info->recv_info->rssi, connectable);
+	printk("[DEVICE]: %s, RSSI %i, connectable: %d , PHY: %d\r\n", le_addr, device_info->recv_info->rssi, connectable, device_info->recv_info->primary_phy);
 }
 
 

@@ -9,6 +9,7 @@
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
 extern uint8_t ble_had_been_inited;
+extern struct bt_conn *current_conn;
 
 void bt_scan_enable(void);
 void bt_advertising_start(void);

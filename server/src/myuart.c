@@ -3,14 +3,6 @@
 /* 串口设备 */
 const struct device *uart;
 
-/**
- * @breif: 串口回调函数，目前没用
- * @param
- */
-static void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data){
-
-}
-
 
 /**
  * @breif: 串口初始化
@@ -46,4 +38,13 @@ int arch_printk_char_out(int c)
 	uart_poll_out(uart, (unsigned char)c);
 	/* do nothing */
 	return c;
+}
+
+
+/**
+ * @breif: 串口回调函数，目前没用
+ * @param
+ */
+__weak void uart_cb(const struct device *dev, struct uart_event *evt, void *user_data){
+
 }

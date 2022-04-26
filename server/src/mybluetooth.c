@@ -5,8 +5,7 @@
 /* 蓝牙初始化完成标志 */
 uint8_t ble_had_been_inited = 0;
 
-static struct bt_conn *current_conn;
-static struct bt_conn *auth_conn;
+struct bt_conn *current_conn;
 
 /* 连接相关回调函数注册 */
 BT_CONN_CB_DEFINE(conn_callbacks) = {
@@ -119,13 +118,10 @@ void disconnected_cb(struct bt_conn *conn, uint8_t reason)
 
 	printk("Disconnected (reason %u)\r\n", reason);
 
-	if (auth_conn) {
-		bt_conn_unref(auth_conn);
-		auth_conn = NULL;
-	}
-
 	if (current_conn) {
 		bt_conn_unref(current_conn);
 		current_conn = NULL;
 	}
 }
+
+

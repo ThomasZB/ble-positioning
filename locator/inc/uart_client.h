@@ -33,6 +33,7 @@ typedef struct{
 
     uint16_t tx_handle;
     uint16_t rx_handle;
+    uint16_t tx_ccc;
     /* 发送特征描述 */
 	struct bt_gatt_subscribe_params tx_notif_params; 
     /* 接收特征描述 */
@@ -42,7 +43,11 @@ typedef struct{
 
 int bt_uart_subscribe_receive(void);
 int get_uart_service(struct bt_gatt_dm *dm);
+int bt_uart_client_send(const uint8_t *data, uint16_t len);
 
 
+void bt_uart_client_send_cb(struct bt_conn *, uint8_t err, struct bt_gatt_write_params *);
 uint8_t uart_tx_notify_cb(struct bt_conn *, struct bt_gatt_subscribe_params *, const void *, uint16_t);
+
+
 #endif

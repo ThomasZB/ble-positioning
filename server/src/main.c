@@ -7,8 +7,9 @@
 #include "myuart.h"
 #include "uart_profile.h"
 
-static K_SEM_DEFINE(ble_init_ok, 0, 1);
 
+K_THREAD_DEFINE(ble_write_thread_id, BT_UART_STACKSIZE, ble_write_thread, NULL, NULL,
+		NULL, BT_UART_PRIORITY, 0, 0);
 
 void main(void)
 {
@@ -30,6 +31,8 @@ void main(void)
 	bt_advertising_start();
 	while (1){
 		printk("hello world\r\n");
-		NRFX_DELAY_US(2000000);
+		k_sleep(K_MSEC(2000));
 	}
 }
+
+
