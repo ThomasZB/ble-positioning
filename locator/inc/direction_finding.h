@@ -19,10 +19,13 @@
 #define SYNC_CREATE_TIMEOUT_INTERVAL_NUM 7
 #define MY_GAP_ADV_MAX_DATA_LEN 200
 
-
+extern struct k_sem sem_per_sync;
+extern volatile bool per_adv_found;
+extern uint32_t sync_create_timeout_ms;
 
 int wait_sync(void);
-void enable_cte_rx(void);
+int delete_sync(void);
+int enable_cte_rx(void);
 int wait_sync_lost(void);
 int wait_central_adv(void);
 void create_sync_handle(void);

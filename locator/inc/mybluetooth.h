@@ -58,7 +58,7 @@ void scan_filter_match_cb(struct bt_scan_device_info*, struct bt_scan_filter_mat
  */
 static inline uint32_t adv_interval_to_ms(uint16_t interval)
 {
-	return interval * 5 / 4;
+	return (uint32_t)(interval*1.25);
 }
 
 

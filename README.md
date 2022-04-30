@@ -26,3 +26,8 @@ void bt_scan_conn_modify(bool connect_if_match){
 # 吐槽
 
 nordic官方代码bug是真的多
+
+# 板子bug
+
+1. 36和37引脚封装弄反（后面再修）
+1. TX引脚接到了NC引脚

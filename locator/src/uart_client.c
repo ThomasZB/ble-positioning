@@ -168,7 +168,6 @@ int bt_uart_client_send(const uint8_t *data, uint16_t len){
 void bt_uart_client_send_cb(struct bt_conn *conn, uint8_t err,
 		    struct bt_gatt_write_params *params)
 {
-	struct bt_nus_client *nus_c;
 	const void *data;
 	uint16_t length;
 

@@ -13,15 +13,19 @@
 #include "myuart.h"
 #include "direction_finding.h"
 #include "uart_client.h"
+#include "nrf_reg.h"
 
 
 void main(void)
 {
 	int err;
-    int i=0;
 	
 	/* 串口初始化 */
-	uart_init();
+	err = uart_init();
+    printk("locater started\r\n");
+    if (err){
+		printk("uart init failed, errcode: %d\r\n", err);
+	}
 
 	/* 使能蓝牙协议栈 */
 	err = bt_enable(NULL);
@@ -36,11 +40,11 @@ void main(void)
 	bt_scan_enable();
 
 	/* 使能direction finding */
-	//direction_finding_init();
-	
+	direction_finding_init();
 
 	/* 开始AOD测量 */
 	while (1){
+        per_adv_found = 0;
 		/* 使能扫描，若未连接，进行5ms扫描 */
 		if (current_conn == NULL){
 			bt_switch_conn();
@@ -56,10 +60,29 @@ void main(void)
 
 		/* 进行同步 */
 		create_sync_handle();
-		wait_sync();
+		printk("Waiting for periodic sync...\r\n");
+        err = k_sem_take(&sem_per_sync, K_MSEC(sync_create_timeout_ms));
+        if (err) {
+            printk("failed waitting (err %d)\r\n", err);
+            err = delete_sync();
+            if (err){
+                return;
+            }
+            continue;
+        }
+        printk("success. Periodic sync established.\r\n");
 
 		/* 接收CTE信息 */
-		enable_cte_rx();
+		err = enable_cte_rx();
+        if (err) {
+            printk("failed waitting (err %d)\r\n", err);
+            err = delete_sync();
+            if (err){
+                return;
+            }
+            continue;
+        }
+        printk("success. Periodic sync established.\r\n");
 		
 		/* 停止一次采集，准备下次采集 */
 		bt_scan_disable();

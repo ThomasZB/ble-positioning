@@ -29,7 +29,7 @@ BT_CONN_CB_DEFINE(conn_callbacks) = {
 };
 
 /* 扫描相关回调函数初始化，注册在函数里面 */
-BT_SCAN_CB_INIT(scan_callbacks, scan_filter_match_cb, NULL,
+BT_SCAN_CB_INIT(scan_callbacks, scan_filter_match_cb, scan_filter_not_match_cb,
 		scan_connecting_error_cb, scan_connecting_cb);
 
 /* 服务发现回调函数 */
@@ -42,9 +42,10 @@ const struct bt_gatt_dm_cb discovery_cb = {
 /* 扫描参数 */
 const struct bt_le_scan_param my_scan_param = {
 	.type       = BT_HCI_LE_SCAN_ACTIVE,
-	.options    = BT_LE_SCAN_OPT_NONE,
-	.interval   = 0x00A0,
-	.window     = 0x0050,
+	.options    = BT_LE_SCAN_OPT_FILTER_DUPLICATE,
+	.interval   = BT_GAP_SCAN_FAST_INTERVAL,
+	.window     = BT_GAP_SCAN_FAST_WINDOW,
+    .timeout = 0U,
 };
 struct bt_scan_init_param my_scan_init_param = {
 		.scan_param = &my_scan_param,
@@ -115,7 +116,7 @@ int bt_scan_disable(void){
 	int err;
 
 	err = bt_scan_stop();
-	if ((!err) && (err != -EALREADY)) {
+	if (err) {
 		printk("failed (err %d)\r\n", err);
 		return err;
 	}

@@ -19,25 +19,35 @@ K_SEM_DEFINE(sem_per_sync, 0, 1);       /* 用于同步的信号量 */
 K_SEM_DEFINE(sem_per_sync_lost, 0, 1);  /* 同步丢失的信号量 */
 
 /* 是否找到周期广播的信号 */
-static volatile bool per_adv_found;
+volatile bool per_adv_found;
 static struct bt_le_per_adv_sync *sync_handle;
 
 
 static uint8_t per_sid;
 static bt_addr_le_t per_addr;
-static uint32_t sync_create_timeout_ms;
+uint32_t sync_create_timeout_ms;
 
+void state_changed_cb(struct bt_le_per_adv_sync *sync,
+			      const struct bt_le_per_adv_sync_state_info *info){
+                      printk("this is state changed cb\r\n");
+                  }
+void biginfo_cb(struct bt_le_per_adv_sync *sync, const struct bt_iso_biginfo *biginfo){
+    printk("this is biginfo cb\r\n");
+}
 
-
-void direction_finding_init(void){
-    /* 定义在函数内部以节省空间 */
-    struct bt_le_per_adv_sync_cb sync_callbacks = {
+ struct bt_le_per_adv_sync_cb sync_callbacks = {
 	.synced = sync_cb,
 	.term = term_cb,
 	.recv = recv_cb,
 	.cte_report_cb = cte_recv_cb,
+    .state_changed = state_changed_cb,
+    .biginfo = biginfo_cb,
     };
 
+void direction_finding_init(void){
+    /* 定义在函数内部以节省空间 */
+   
+   
     printk("Periodic Advertising callbacks register...\r\n");
 	bt_le_per_adv_sync_cb_register(&sync_callbacks);
 	printk("success.\r\n");
@@ -67,7 +77,7 @@ int wait_central_adv(void){
  * @brief 创建一个同步的句柄
  */
 void create_sync_handle(void){
-    struct bt_le_per_adv_sync_param sync_create_param;
+    static struct bt_le_per_adv_sync_param sync_create_param;
 	int err;
 
 	printk("Creating Periodic Advertising Sync...\r\n");
@@ -84,6 +94,20 @@ void create_sync_handle(void){
 	printk("success.\r\n");
 }
 
+int delete_sync(void)
+{
+	int err;
+
+	printk("Deleting Periodic Advertising Sync...\r\n");
+	err = bt_le_per_adv_sync_delete(sync_handle);
+	if (err) {
+		printk("failed (err %d)\r\n", err);
+		return err;
+	}
+	printk("success\r\n");
+
+	return 0;
+}
 
 /**
  * @brief 等待广播消息
@@ -95,7 +119,8 @@ int wait_sync(void){
     printk("Waiting for periodic sync...\r\n");
     err = k_sem_take(&sem_per_sync, K_MSEC(sync_create_timeout_ms));
     if (err) {
-        printk("failed (err %d)\r\n", err);
+        printk("failed waitting (err %d)\r\n", err);
+        err = delete_sync();
         return err;
     }
     printk("success. Periodic sync established.\r\n");
@@ -125,21 +150,26 @@ int wait_sync_lost(void){
  * @brief 使能CTE接收
  * 
  */
-void enable_cte_rx(void){
+int enable_cte_rx(void){
     int err;
 
-	const struct bt_df_per_adv_sync_cte_rx_param cte_rx_params = {
-		.max_cte_count = 5,
-		.cte_types = BT_DF_CTE_TYPE_AOD_1US | BT_DF_CTE_TYPE_AOD_2US,
+	static struct bt_df_per_adv_sync_cte_rx_param cte_rx_params = {
+		.max_cte_count = 1,
+		.cte_types = BT_DF_CTE_TYPE_AOD_2US,
+        // .slot_durations = 0x02,
+        // .ant_ids=NULL,
+        // .num_ant_ids=1,
 	};
 
 	printk("Enable receiving of CTE...\r\n");
+    
 	err = bt_df_per_adv_sync_cte_rx_enable(sync_handle, &cte_rx_params);
 	if (err) {
 		printk("failed (err %d)\r\n", err);
-		return;
+		return err;
 	}
 	printk("success. CTE receive enabled.\r\n");
+    return 0;
 }
 
 
@@ -191,9 +221,6 @@ void scan_filter_not_match_cb(struct bt_scan_device_info *device_info,
 	char le_addr[BT_ADDR_LE_STR_LEN];
 	bt_addr_le_to_str(device_info->recv_info->addr, le_addr, sizeof(le_addr));
 
-    /* 打印信息 */
-	printk("[DEVICE]: %s, RSSI %i, connectable: %d \r\n", le_addr, device_info->recv_info->rssi, connectable);
-
     /* 找到周期广播信号 */
     if (!per_adv_found && device_info->recv_info->interval) {
 		sync_create_timeout_ms =
@@ -201,7 +228,8 @@ void scan_filter_not_match_cb(struct bt_scan_device_info *device_info,
 		per_adv_found = true;
 		per_sid = device_info->recv_info->sid;
 		bt_addr_le_copy(&per_addr, device_info->recv_info->addr);
-
+        /* 打印信息 */
+	    printk("[DEVICE]: %s, RSSI %i, sync_create_timeout_ms: %d \r\n", le_addr, device_info->recv_info->rssi, (int)adv_interval_to_ms);
         /* 发送信号 */
 		k_sem_give(&sem_per_adv);
 	}
