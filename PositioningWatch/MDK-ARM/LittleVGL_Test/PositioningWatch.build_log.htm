@@ -1,0 +1,82 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.36.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Chen Thomas, CQUPT, LIC=9N0AE-5E9Y1-ZEEH2-95HP6-IXFR3-ZVUMF
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.36.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.36.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      Segger\JL2CM3.dll V2.99.40.0
+Dialog DLL:      TCM.DLL V1.53.0.0
+ 
+<h2>Project:</h2>
+D:\Code\Nordic\ble-positioning\PositioningWatch\MDK-ARM\PositioningWatch.uvprojx
+Project File Date:  05/16/2022
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'PositioningWatch'
+compiling freertos.c...
+../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f412rx.h(52): warning:  #47-D: incompatible redefinition of macro "__FPU_PRESENT" 
+  #define __FPU_PRESENT             1U       /*!< FPU present                                   */
+../Core/Src/freertos.c(222): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          voltage = 2.0*adc_getvoltage();
+../Core/Src/freertos.c(223): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          electicity = relu100((voltage-3.45)/0.0075);
+../Core/Src/freertos.c(244): warning:  #177-D: variable "distance"  was declared but never referenced
+  	static float distance = 0;
+../Core/Src/freertos.c(365): warning:  #177-D: variable "remain_num"  was declared but never referenced
+      static uint8_t remain_num = 0;
+../Core/Src/freertos.c(366): warning:  #177-D: variable "time_stamp"  was declared but never referenced
+  	static unsigned long time_stamp = 0;
+../Core/Src/freertos.c(367): warning:  #177-D: variable "accel"  was declared but never referenced
+  	static short accel[3];
+../Core/Src/freertos.c(368): warning:  #177-D: variable "euler_angle"  was declared but never referenced
+  	static float euler_angle[3];			//æ¬§æ‹‰è§?
+../Core/Src/freertos.c(369): warning:  #177-D: variable "temp"  was declared but never referenced
+      static short temp;						//æ¸©åº¦
+../Core/Src/freertos.c(370): warning:  #177-D: variable "displacement"  was declared but never referenced
+  	static float displacement[3] = {0};
+../Core/Src/freertos.c: 10 warnings, 0 errors
+linking...
+Program Size: Code=192068 RO-data=30060 RW-data=988 ZI-data=112420  
+FromELF: creating hex file...
+"LittleVGL_Test\PositioningWatch.axf" - 0 Error(s), 10 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.13.0.pack
+                Keil.STM32F4xx_DFP.2.13.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_PositioningWatch
+  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+      Include file:  CMSIS\Core\Include\tz_context.h
+Build Time Elapsed:  00:00:05
+</pre>
+</body>
+</html>

@@ -30,7 +30,15 @@
             "streambuf": "c",
             "kernel.h": "c",
             "uart_client.h": "c",
-            "nus.h": "c"
+            "nus.h": "c",
+            "nrf_reg.h": "c",
+            "chrono": "c",
+            "cmath": "c",
+            "numeric": "c",
+            "ratio": "c",
+            "cinttypes": "c",
+            "cstdlib": "c",
+            "scan.h": "c"
         },
         "nrf-connect.boardRoots": [
             "${workspaceFolder}"

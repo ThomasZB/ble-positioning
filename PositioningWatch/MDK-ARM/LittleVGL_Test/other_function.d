@@ -1,0 +1,12 @@
+littlevgl_test\other_function.o: ..\Drivers\HARDWARE\FUNCTION\other_function.c
+littlevgl_test\other_function.o: ..\Drivers\HARDWARE\FUNCTION\other_function.h
+littlevgl_test\other_function.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+littlevgl_test\other_function.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+littlevgl_test\other_function.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+littlevgl_test\other_function.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+littlevgl_test\other_function.o: ..\Drivers\CMSIS\DSP\Include\arm_math.h
+littlevgl_test\other_function.o: ../Drivers/CMSIS/Include/core_cm4.h
+littlevgl_test\other_function.o: ../Drivers/CMSIS/Include/cmsis_version.h
+littlevgl_test\other_function.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+littlevgl_test\other_function.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+littlevgl_test\other_function.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

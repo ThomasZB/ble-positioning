@@ -13,6 +13,21 @@
 
 #include "mybluetooth.h"
 
+
+/* 串口透传服务UUID */
+#define UART_TP_UUID_VAL BT_UUID_128_ENCODE(0x4fafc201,0x1fb5, 0x459e, 0x8fcc, 0xc5c9c331914b)
+
+/* 发送特征UUID */
+#define UART_TX_UUID_VAL BT_UUID_128_ENCODE(0x92d84e59,0x057e, 0x43a4, 0xb050, 0xb90b54293f50)
+
+/* 接收特征UUID */
+#define UART_RX_UUID_VAL BT_UUID_128_ENCODE(0xf9aacb93,0x0c3a, 0x49e3, 0x91df, 0xa527f45cb27c)
+
+#define BT_UUID_UART_TP        BT_UUID_DECLARE_128(UART_TP_UUID_VAL)
+#define BT_UUID_UART_RX        BT_UUID_DECLARE_128(UART_TX_UUID_VAL)
+#define BT_UUID_UART_TX        BT_UUID_DECLARE_128(UART_RX_UUID_VAL)
+
+
 /* 蓝牙串口标志 */
 enum bt_uart_send_status {
 	/* 发送通知已启用 */

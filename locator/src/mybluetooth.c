@@ -66,7 +66,7 @@ int scan_init(void){
 	bt_scan_cb_register(&scan_callbacks);
 
 	/* 添加过滤器 */
-	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_NAME, "ble_thomas");
+	err = bt_scan_filter_add(BT_SCAN_FILTER_TYPE_NAME, "dzyesp32");
 	if (err) {
 		printk("Scanning filters cannot be set (err %d)\r\n", err);
 		return err;

@@ -1,0 +1,17 @@
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\lv_bidi.c
+littlevgl_test\lv_bidi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\lv_bidi.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\../lv_conf_internal.h
+littlevgl_test\lv_bidi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\../lv_conf_kconfig.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\../../../lv_conf.h
+littlevgl_test\lv_bidi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\lv_txt.h
+littlevgl_test\lv_bidi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\lv_area.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\../font/lv_font.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\../font/lv_symbol_def.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\lv_printf.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\lv_types.h
+littlevgl_test\lv_bidi.o: ..\Drivers\GUI\lvgl\src\misc\../misc/lv_mem.h
+littlevgl_test\lv_bidi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

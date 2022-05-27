@@ -10,7 +10,7 @@
  */
 #include "uart_client.h"
 #include "myuart.h"
-#include "bluetooth/services/nus.h"
+#include <bluetooth/services/nus.h>
 
 bt_uart_client bt_uart_client_handle;
 
@@ -32,18 +32,18 @@ int get_uart_service(struct bt_gatt_dm *dm){
     /* 解析服务UUID */
     printk("finded service!\r\n");
     printk("uuid_type: %d\r\n", gatt_service->uuid->type);
-    if (bt_uuid_cmp(gatt_service->uuid, BT_UUID_NUS_SERVICE)) {
+    if (bt_uuid_cmp(gatt_service->uuid, BT_UUID_UART_TP)) {
 		return -ENOTSUP;
 	}
     printk("Getting handles from service.!\r\n");
 
 	/* 解析TX特征 */
-	gatt_chrc = bt_gatt_dm_char_by_uuid(dm, BT_UUID_NUS_TX);
+	gatt_chrc = bt_gatt_dm_char_by_uuid(dm, BT_UUID_UART_TX);
 	if (!gatt_chrc) {
 		printk("Missing TX characteristic.\r\n");
 		return -EINVAL;
 	}
-	gatt_desc = bt_gatt_dm_desc_by_uuid(dm, gatt_chrc, BT_UUID_NUS_TX);
+	gatt_desc = bt_gatt_dm_desc_by_uuid(dm, gatt_chrc, BT_UUID_UART_TX); /* gatt描述符 */
 	if (!gatt_desc) {
 		printk("Missing TX value descriptor in characteristic.\r\n");
 		return -EINVAL;
@@ -63,12 +63,12 @@ int get_uart_service(struct bt_gatt_dm *dm){
 
 
 	/* 解析RX特征 */
-	gatt_chrc = bt_gatt_dm_char_by_uuid(dm, BT_UUID_NUS_RX);
+	gatt_chrc = bt_gatt_dm_char_by_uuid(dm, BT_UUID_UART_RX);
 	if (!gatt_chrc) {
 		printk("Missing RX characteristic.\r\n");
 		return -EINVAL;
 	}
-	gatt_desc = bt_gatt_dm_desc_by_uuid(dm, gatt_chrc, BT_UUID_NUS_RX);
+	gatt_desc = bt_gatt_dm_desc_by_uuid(dm, gatt_chrc, BT_UUID_UART_RX);
 	if (!gatt_desc) {
 		printk("Missing RX value descriptor in characteristic.\r\n");
 		return -EINVAL;

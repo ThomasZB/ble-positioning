@@ -14,7 +14,13 @@
 #include "direction_finding.h"
 #include "uart_client.h"
 #include "nrf_reg.h"
+#include "arm_math.h"
+#include "math.h"
 
+
+/* 创建发送线程 */
+K_THREAD_DEFINE(ble2stm32_thread_id, BLE2STM32_STACKSIZE, ble2stm32_thread, NULL, NULL,
+		NULL, BLE2STM32_PRIORITY, 0, 0);
 
 void main(void)
 {
@@ -49,14 +55,17 @@ void main(void)
 		if (current_conn == NULL){
 			bt_switch_conn();
 			bt_scan_enable();
-			k_msleep(5);
+			k_msleep(200);
 			bt_scan_disable();
 		}
 		bt_switch_df();
         bt_scan_enable();
 		
 		/* 找到对应的AOD广播设备 */
-		wait_central_adv();
+		err = wait_central_adv();
+        if (err){
+            continue;
+        }
 
 		/* 进行同步 */
 		create_sync_handle();
@@ -84,10 +93,15 @@ void main(void)
         }
         printk("success. Periodic sync established.\r\n");
 		
-		/* 停止一次采集，准备下次采集 */
+		/* 关闭扫描节省能量 */
 		bt_scan_disable();
 		wait_sync_lost();
 		k_msleep(2000);
-		printk("hello world\r\n");
 	}
 }
+
+
+
+
+
+

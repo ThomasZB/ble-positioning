@@ -1,0 +1,16 @@
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\lv_font.c
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\lv_font.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../lv_conf_internal.h
+littlevgl_test\lv_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../lv_conf_kconfig.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../../../lv_conf.h
+littlevgl_test\lv_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+littlevgl_test\lv_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\lv_symbol_def.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../misc/lv_area.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../misc/lv_utils.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../misc/lv_log.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../misc/lv_types.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../misc/lv_assert.h
+littlevgl_test\lv_font.o: ..\Drivers\GUI\lvgl\src\font\../misc/lv_mem.h
+littlevgl_test\lv_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
