@@ -18,16 +18,27 @@
 #include "math.h"
 
 
-/* 创建发送线程 */
+/* 创建和32通信线程 */
 K_THREAD_DEFINE(ble2stm32_thread_id, BLE2STM32_STACKSIZE, ble2stm32_thread, NULL, NULL,
 		NULL, BLE2STM32_PRIORITY, 0, 0);
+
+/* 创建接收基站1周期性广播线程 */
+K_THREAD_DEFINE(perodic_adv_thread1_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread1, NULL, NULL,
+		NULL, PERODIC_ADV_PRIORITY, 0, 0);
+
+/* 创建接收基站2周期性广播线程 */
+// K_THREAD_DEFINE(perodic_adv_thread2_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread2, NULL, NULL,
+// 		NULL, PERODIC_ADV_PRIORITY, 0, 0);
+
 
 void main(void)
 {
 	int err;
+	int i=0 ;
 	
 	/* 串口初始化 */
 	err = uart_init();
+	k_msleep(1000);
     printk("locater started\r\n");
     if (err){
 		printk("uart init failed, errcode: %d\r\n", err);
@@ -48,54 +59,24 @@ void main(void)
 	/* 使能direction finding */
 	direction_finding_init();
 
+    /* 发送蓝牙就绪信号量 */
+	k_sem_give(&my_ble_ready);
+
 	/* 开始AOD测量 */
 	while (1){
-        per_adv_found = 0;
 		/* 使能扫描，若未连接，进行5ms扫描 */
 		if (current_conn == NULL){
 			bt_switch_conn();
 			bt_scan_enable();
-			k_msleep(200);
-			bt_scan_disable();
+			k_msleep(500);
 		}
-		bt_switch_df();
-        bt_scan_enable();
-		
-		/* 找到对应的AOD广播设备 */
-		err = wait_central_adv();
-        if (err){
-            continue;
-        }
-
-		/* 进行同步 */
-		create_sync_handle();
-		printk("Waiting for periodic sync...\r\n");
-        err = k_sem_take(&sem_per_sync, K_MSEC(sync_create_timeout_ms));
-        if (err) {
-            printk("failed waitting (err %d)\r\n", err);
-            err = delete_sync();
-            if (err){
-                return;
-            }
-            continue;
-        }
-        printk("success. Periodic sync established.\r\n");
-
-		/* 接收CTE信息 */
-		err = enable_cte_rx();
-        if (err) {
-            printk("failed waitting (err %d)\r\n", err);
-            err = delete_sync();
-            if (err){
-                return;
-            }
-            continue;
-        }
-        printk("success. Periodic sync established.\r\n");
-		
-		/* 关闭扫描节省能量 */
-		bt_scan_disable();
-		wait_sync_lost();
+		if (gatt_had_been_find && current_conn){
+			bt_uart_client_read();
+			bt_uart_client_send("hello", 5);
+		}
+		if (i++ == 20){
+			printk("Hello world\r\n");
+		}
 		k_msleep(2000);
 	}
 }

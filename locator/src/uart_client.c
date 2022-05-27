@@ -10,9 +10,8 @@
  */
 #include "uart_client.h"
 #include "myuart.h"
-#include <bluetooth/services/nus.h>
 
-bt_uart_client bt_uart_client_handle;
+bt_uart_client  bt_uart_client_handle;
 
 
 /**
@@ -178,3 +177,48 @@ void bt_uart_client_send_cb(struct bt_conn *conn, uint8_t err,
 
 	atomic_clear_bit(&bt_uart_client_handle.state, BT_UART_RX_WRITE_PENDING);
 }
+
+uint8_t bt_uart_client_read_cb(struct bt_conn *conn, uint8_t err,
+				    struct bt_gatt_read_params *params,
+				    const void *data, uint16_t length)
+{
+	if (err){
+		printk("read err (-%d)\r\n", err);
+	}
+	if (!data) {
+		printk("\r\n");
+		atomic_clear_bit(&bt_uart_client_handle.state, BT_UART_READ_PENDING);
+		return BT_GATT_ITER_STOP;
+	}
+
+	uart_tx(uart, data, length, 0xffff);
+	return BT_GATT_ITER_CONTINUE;
+}
+
+
+int bt_uart_client_read(void){
+	int err;
+
+	if (!bt_uart_client_handle.conn) {
+		return -ENOTCONN;
+	}
+
+	if (atomic_test_and_set_bit(&bt_uart_client_handle.state, BT_UART_READ_PENDING)) {
+		return -EALREADY;
+	}
+
+	bt_uart_client_handle.read_params.func = bt_uart_client_read_cb;
+	bt_uart_client_handle.read_params.single.handle = bt_uart_client_handle.tx_handle;
+	bt_uart_client_handle.read_params.single.offset = 0;
+	bt_uart_client_handle.read_params.handle_count = 1;
+
+	err = bt_gatt_read(bt_uart_client_handle.conn, &bt_uart_client_handle.read_params);
+	if (err) {
+		atomic_clear_bit(&bt_uart_client_handle.state, BT_UART_READ_PENDING);
+	}
+
+	return err;
+}
+
+
+

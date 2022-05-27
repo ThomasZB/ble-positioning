@@ -17,7 +17,6 @@
 #include "bluetooth/scan.h"
 #include "bluetooth/conn.h"
 #include <bluetooth/gatt_dm.h>
-#include "uart_profile.h"
 
 #define PEER_NAME_LEN_MAX 30
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
@@ -26,6 +25,7 @@
 
 extern bool scan_enabled;
 extern uint8_t ble_had_been_inited;
+extern uint8_t gatt_had_been_find;
 extern struct bt_conn *current_conn;
 
 /* 外部调用函数 */

@@ -18,14 +18,14 @@
 #define UART_TP_UUID_VAL BT_UUID_128_ENCODE(0x4fafc201,0x1fb5, 0x459e, 0x8fcc, 0xc5c9c331914b)
 
 /* 发送特征UUID */
-#define UART_TX_UUID_VAL BT_UUID_128_ENCODE(0x92d84e59,0x057e, 0x43a4, 0xb050, 0xb90b54293f50)
+#define UART_TX_UUID_VAL BT_UUID_128_ENCODE(0x4fafc203,0x1fb5, 0x459e, 0x8fcc, 0xc5c9c331914b)
 
 /* 接收特征UUID */
-#define UART_RX_UUID_VAL BT_UUID_128_ENCODE(0xf9aacb93,0x0c3a, 0x49e3, 0x91df, 0xa527f45cb27c)
+#define UART_RX_UUID_VAL BT_UUID_128_ENCODE(0x4fafc204,0x1fb5, 0x459e, 0x8fcc, 0xc5c9c331914b)
 
 #define BT_UUID_UART_TP        BT_UUID_DECLARE_128(UART_TP_UUID_VAL)
-#define BT_UUID_UART_RX        BT_UUID_DECLARE_128(UART_TX_UUID_VAL)
-#define BT_UUID_UART_TX        BT_UUID_DECLARE_128(UART_RX_UUID_VAL)
+#define BT_UUID_UART_TX        BT_UUID_DECLARE_128(UART_TX_UUID_VAL)
+#define BT_UUID_UART_RX        BT_UUID_DECLARE_128(UART_RX_UUID_VAL)
 
 
 /* 蓝牙串口标志 */
@@ -37,7 +37,8 @@ enum bt_uart_send_status {
 
     BT_UART_INITIALIZED,
 	BT_UART_TX_NOTIF_ENABLED,
-	BT_UART_RX_WRITE_PENDING
+	BT_UART_RX_WRITE_PENDING,
+    BT_UART_READ_PENDING
 };
 
 typedef struct{
@@ -53,12 +54,15 @@ typedef struct{
 	struct bt_gatt_subscribe_params tx_notif_params; 
     /* 接收特征描述 */
     struct bt_gatt_write_params rx_write_params;
+    /* 读取 */
+    struct bt_gatt_read_params read_params;
 }bt_uart_client;
 
-
+int bt_uart_client_read(void);
 int bt_uart_subscribe_receive(void);
 int get_uart_service(struct bt_gatt_dm *dm);
 int bt_uart_client_send(const uint8_t *data, uint16_t len);
+
 
 
 void bt_uart_client_send_cb(struct bt_conn *, uint8_t err, struct bt_gatt_write_params *);

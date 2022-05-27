@@ -116,7 +116,7 @@ void LCD_Init(void)
 {	
 	LCD_Reset();
 	
-	LCD_BLK_Set(30);//打开背光
+	LCD_BLK_Set(50);//打开背光
 	HAL_Delay(100);
 	
 	LCD_WR_REG(0x11); 

@@ -264,17 +264,29 @@ void NordicTask(void *argument)
 					while (1){
 						if (ant_id != 0) {
 							rssi_filter = kalman_filter_rssi(rssi);
-							set_rssi_data(1, rssi_filter, 1.0);
+							distance = pow(10, (-42.9149-rssi_filter)/24.092);
+//							angle1 = angle1*57.28578;
+//							angle2 = angle2*57.28578;
+							set_rssi_data(1, rssi_filter, distance);
 							set_aod_data(ant_id, angle1, angle2);
-							printf ("rssi:%.1f\r\n", rssi_filter);
 						}
 						else {
 							break;
 						}
+						
 						ant_id = get_rssi_aod_from_char(NULL, next_start, &rssi, &angle1, &angle2);
 					}
 				}
 			}
+
+
+//			data_len = uart_data.len;
+//			uart_data.len = 0;
+//			UART_Start_Receive_IT(&huart1, uart_data.data, 1);
+//			HAL_UART_Transmit(&huart3, (uint8_t *)uart_data.data, data_len, 1000);
+
+
+
 			/* 处理完数据 */
         }
         osDelay(FREERTOS_MS(40));

@@ -12,12 +12,12 @@
 #include "mybluetooth.h"
 #include "myuart.h"
 #include "uart_client.h"
-#include "bluetooth/services/nus.h"
 
 
 /* 蓝牙初始化完成标志 */
 bool scan_enabled = 0;
 uint8_t ble_had_been_inited = 0;
+uint8_t gatt_had_been_find = 0;
 
 /* 连接句柄 */
 struct bt_conn *current_conn = NULL;
@@ -92,17 +92,18 @@ int scan_init(void){
 int bt_scan_enable(void){
 	int err;
 	
-	if (!scan_enabled) {
-		printk("Start scanning...\r\n");
-		/* 开始扫描 */
-		err = bt_scan_start(BT_SCAN_TYPE_SCAN_ACTIVE);
-		if (err) {
-			printk("Starting scanning failed (err %d)\r\n", err);
-			return err;
-		}
-		scan_enabled = true;
-		printk("Scanning successfully started!\r\n");
+	/* 开始扫描 */
+	err = bt_scan_start(BT_SCAN_TYPE_SCAN_ACTIVE);
+	if (err == -120){
+		return 0;
 	}
+	else if (err) {
+		printk("Starting scanning failed (err %d)\r\n", err);
+		return err;
+	}
+	scan_enabled = true;
+	printk("Scanning successfully started!\r\n");
+	
 	return 0;
 }
 
@@ -116,8 +117,12 @@ int bt_scan_disable(void){
 	int err;
 
 	err = bt_scan_stop();
-	if (err) {
-		printk("failed (err %d)\r\n", err);
+	if (err == 120) {
+		printk("scan aready disabled\r\n");
+		return err;
+	}
+	else if (err){
+		printk("scan disable failed (err %d)\r\n", err);
 		return err;
 	}
 	printk("Scan disabled.\r\n");
@@ -140,7 +145,7 @@ void gatt_service_discover(struct bt_conn *conn)
 		return;
 	}
 
-	err = bt_gatt_dm_start(conn, BT_UUID_NUS_SERVICE, &discovery_cb, NULL);
+	err = bt_gatt_dm_start(conn, BT_UUID_UART_TP, &discovery_cb, NULL);
 
 	if (err) {
 		printk("could not start the discovery procedure, error "
@@ -176,10 +181,12 @@ void connected_cb(struct bt_conn *conn, uint8_t err)
 	gatt_service_discover(conn);
 
 	/* 关闭自动连接 */
-	bt_scan_disable();
-	if (err){
-		printk("Stop failed (%d) \r\n", err);
-	}
+	// bt_scan_disable();
+	// if (err){
+	// 	printk("Stop failed (%d) \r\n", err);
+	// }
+	bt_scan_enable();
+	bt_switch_df();
 }
 
 
@@ -211,6 +218,7 @@ void disconnected_cb(struct bt_conn *conn, uint8_t reason)
 	printk("Disconnected (reason %u)\r\n", reason);
 	bt_conn_unref(current_conn);
 	current_conn = NULL;
+	gatt_had_been_find = 0;
 }
 
 
@@ -270,9 +278,11 @@ __weak void scan_filter_match_cb(struct bt_scan_device_info *device_info,
 			      bool connectable)
 {
 	char le_addr[BT_ADDR_LE_STR_LEN];
-	bt_addr_le_to_str(device_info->recv_info->addr, le_addr, sizeof(le_addr));
-
-	printk("[DEVICE]: %s, RSSI %i, connectable: %d , PHY: %d\r\n", le_addr, device_info->recv_info->rssi, connectable, device_info->recv_info->primary_phy);
+	if (current_conn == NULL){
+		bt_addr_le_to_str(device_info->recv_info->addr, le_addr, sizeof(le_addr));
+		printk("[DEVICE]: %s, RSSI %i, connectable: %d , PHY: %d\r\n", le_addr, device_info->recv_info->rssi, connectable, device_info->recv_info->primary_phy);
+	}
+	
 }
 
 
@@ -331,10 +341,19 @@ void bt_switch_df(void){
 void discovery_complete_cb(struct bt_gatt_dm *dm,
 			       void *context)
 {
+	int err;
 	printk("Service discovery completed\r\n");
 	
-	get_uart_service(dm);
-    bt_uart_subscribe_receive();
+	err = get_uart_service(dm);
+	if (err){
+		printk("find service error!\r\n");
+		
+	}
+	else {
+		gatt_had_been_find = 1;
+	}
+
+    //bt_uart_subscribe_receive();
 
     bt_gatt_dm_data_release(dm);
 }

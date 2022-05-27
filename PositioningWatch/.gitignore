@@ -1,4 +1,2 @@
-MDK-ARM\
-Middlewares\
-Drivers\CMSIS
-Drivers\GUI
+MDK-ARM/
+Drivers/CMSIS/
