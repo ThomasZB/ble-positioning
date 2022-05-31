@@ -38,7 +38,12 @@
             "ratio": "c",
             "cinttypes": "c",
             "cstdlib": "c",
-            "scan.h": "c"
+            "scan.h": "c",
+            "array": "c",
+            "string": "c",
+            "string_view": "c",
+            "kalman_filter.h": "c",
+            "iterator": "c"
         },
         "nrf-connect.boardRoots": [
             "${workspaceFolder}"

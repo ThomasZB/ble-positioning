@@ -18,17 +18,21 @@
 #include "math.h"
 
 
-/* 创建和32通信线程 */
+/* 创建和32通信线程，优先级较低 */
 K_THREAD_DEFINE(ble2stm32_thread_id, BLE2STM32_STACKSIZE, ble2stm32_thread, NULL, NULL,
-		NULL, BLE2STM32_PRIORITY, 0, 0);
+		NULL, BLE2STM32_PRIORITY+3, 0, 0);
 
 /* 创建接收基站1周期性广播线程 */
 K_THREAD_DEFINE(perodic_adv_thread1_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread1, NULL, NULL,
 		NULL, PERODIC_ADV_PRIORITY, 0, 0);
 
 /* 创建接收基站2周期性广播线程 */
-// K_THREAD_DEFINE(perodic_adv_thread2_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread2, NULL, NULL,
-// 		NULL, PERODIC_ADV_PRIORITY, 0, 0);
+K_THREAD_DEFINE(perodic_adv_thread2_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread2, NULL, NULL,
+		NULL, PERODIC_ADV_PRIORITY, 0, 0);
+
+/* 创建接收基站3周期性广播线程 */
+K_THREAD_DEFINE(perodic_adv_thread3_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread3, NULL, NULL,
+		NULL, PERODIC_ADV_PRIORITY, 0, 0);
 
 
 void main(void)
@@ -67,12 +71,12 @@ void main(void)
 		/* 使能扫描，若未连接，进行5ms扫描 */
 		if (current_conn == NULL){
 			bt_switch_conn();
-			bt_scan_enable();
+			//bt_scan_enable();
 			k_msleep(500);
 		}
 		if (gatt_had_been_find && current_conn){
-			bt_uart_client_read();
-			bt_uart_client_send("hello", 5);
+			//bt_uart_client_read();
+			//bt_uart_client_send("hello", 5);
 		}
 		if (i++ == 20){
 			printk("Hello world\r\n");

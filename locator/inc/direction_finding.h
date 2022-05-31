@@ -22,6 +22,7 @@
 #define BLE2STM32_PRIORITY 7
 #define PERODIC_ADV_STACKSIZE 512
 #define PERODIC_ADV_PRIORITY 7
+// #define MYDIRECT_DEBUG
 
 extern struct k_sem my_ble_ready;
 extern struct k_sem sem_per_sync1;
@@ -40,11 +41,12 @@ int delete_sync(uint8_t sync_num);
 int enable_cte_rx(uint8_t sync_num);
 int wait_sync_lost(uint8_t sync_num);
 int wait_central_adv(uint8_t base_num);
-void create_sync_handle(uint8_t sync_num);
+int create_sync_handle(uint8_t sync_num);
 
 void ble2stm32_thread(void);
 void perodic_adv_thread1(void);
 void perodic_adv_thread2(void);
+void perodic_adv_thread3(void);
 
 void scan_filter_not_match_cb(struct bt_scan_device_info*, bool);
 void sync_cb(struct bt_le_per_adv_sync*, struct bt_le_per_adv_sync_synced_info*);

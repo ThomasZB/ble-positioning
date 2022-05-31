@@ -31,6 +31,7 @@
 	current-speed = <115200>;
 	tx-pin = <3>;
 	rx-pin = <25>;
+    // tx-pin = <25>;
 	rx-pull-up;
 };
 

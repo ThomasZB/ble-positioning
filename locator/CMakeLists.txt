@@ -11,5 +11,6 @@ target_sources(app PRIVATE
     src/myuart.c
     src/mybluetooth.c
     src/uart_client.c
-    src/direction_finding.c)
+    src/direction_finding.c
+    src/kalman_filter.c)
 

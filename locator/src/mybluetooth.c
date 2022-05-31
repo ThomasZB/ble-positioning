@@ -95,6 +95,7 @@ int bt_scan_enable(void){
 	/* 开始扫描 */
 	err = bt_scan_start(BT_SCAN_TYPE_SCAN_ACTIVE);
 	if (err == -120){
+        scan_enabled = true;
 		return 0;
 	}
 	else if (err) {
@@ -294,6 +295,8 @@ __weak void scan_filter_match_cb(struct bt_scan_device_info *device_info,
 void scan_connecting_error_cb(struct bt_scan_device_info *device_info)
 {
 	printk("Connecting failed\r\n");
+    bt_scan_enable();
+	bt_switch_df();
 }
 
 
@@ -315,7 +318,7 @@ void scan_connecting_cb(struct bt_scan_device_info *device_info,
  */
 void bt_switch_conn(void){
 	/* 打开自动连接 */
-	printk("switch to connected mode\r\n");
+	//printk("switch to connected mode\r\n");
 	bt_scan_conn_modify(true);
 }
 

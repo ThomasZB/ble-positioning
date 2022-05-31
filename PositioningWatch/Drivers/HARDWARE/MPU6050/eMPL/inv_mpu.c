@@ -779,7 +779,6 @@ int mpu_init(void)
     rev = ((data[5] & 0x01) << 2) | ((data[3] & 0x01) << 1) |
         (data[1] & 0x01);
 
-	printf("data: %x, %x, %x, %x, %x, %x\r\n", data[0], data[1], data[2], data[3], data[4], data[5]);
     if (rev) {
         /* Congrats, these parts are better. */
         if (rev == 1)

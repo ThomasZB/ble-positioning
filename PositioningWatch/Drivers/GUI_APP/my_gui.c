@@ -132,16 +132,16 @@ void set_rssi_data(uint8_t ant_num, int rssi, float distance){
  */
 void set_aod_data(uint8_t ant_num, float pitch_angle, float yaw_angle){
     if (ant_num == 1){
-        lv_label_set_text_fmt(ant1_pitch_angle_label, "%03.1f°", pitch_angle);
-        lv_label_set_text_fmt(ant1_yaw_angle_label, "%03.1f°", yaw_angle);;
+        lv_label_set_text_fmt(ant1_pitch_angle_label, "%03.2f°", pitch_angle);
+        lv_label_set_text_fmt(ant1_yaw_angle_label, "%03.2f°", yaw_angle);;
     }
     else if (ant_num == 2){
-        lv_label_set_text_fmt(ant2_pitch_angle_label, "%03.1f°", pitch_angle);
-        lv_label_set_text_fmt(ant2_yaw_angle_label, "%03.1f°", yaw_angle);;
+        lv_label_set_text_fmt(ant2_pitch_angle_label, "%03.2f°", pitch_angle);
+        lv_label_set_text_fmt(ant2_yaw_angle_label, "%03.2f°", yaw_angle);;
     }
     else if (ant_num == 3){
         lv_label_set_text_fmt(ant3_pitch_angle_label, "%03.1f°", pitch_angle);
-        lv_label_set_text_fmt(ant3_yaw_angle_label, "%03.1f°", yaw_angle);;
+        lv_label_set_text_fmt(ant3_yaw_angle_label, "%03.2f°", yaw_angle);;
     }
 }
 

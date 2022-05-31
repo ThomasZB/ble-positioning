@@ -3,8 +3,9 @@
 #include "stdio.h"
 #include "string.h"
 #include "arm_math.h"
+#include "usart.h"
 
-int get_rssi_aod_from_char(char *c, char** next_start, int* rssi, float* angle1, float* angle2){
+int get_rssi_aod_from_char(char *c, char** next_start, int* rssi, float* angle1, float* angle2, uint16_t str_len){
 	char *str_pos = NULL;
 	uint8_t id;
 	
@@ -14,17 +15,22 @@ int get_rssi_aod_from_char(char *c, char** next_start, int* rssi, float* angle1,
 	else{
 		str_pos = strstr(*next_start, "id:");
 	}
+	if (((uint8_t*)str_pos-uart_data.data) > str_len){
+		return 0;
+	}
 	
 	/* 是需要的信号 */
 	if (str_pos != NULL){
 		/* 得到天线id */
 		id = atoi(str_pos+3);
+		//printf("stm32 find id %d\r\n", id);
 		/* 得到rssi */
 		str_pos = strstr(c, "rssi:");
 		*rssi = atoi(str_pos+5);
 		/* 得到角度 */
 		str_pos = strstr(c, "angle:");
 		sscanf((str_pos+6), "%f %f", angle1, angle2);
+		
 		
 		*next_start = strchr(str_pos, '\n');
 		

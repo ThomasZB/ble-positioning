@@ -243,7 +243,7 @@ void NordicTask(void *argument)
 	static float rssi_filter;
 	static float distance = 0;
 	static float angle1, angle2;
-	static char** next_start;
+	static char* next_start;
 	uint8_t ant_id;
     /* Infinite loop */
 
@@ -260,21 +260,21 @@ void NordicTask(void *argument)
 					HAL_UART_Transmit(&huart3, (uint8_t *)uart_data.data, data_len, 1000);
 					
 					/* 循环接收数据到结束 */
-					ant_id = get_rssi_aod_from_char((char*)uart_data.data, next_start, &rssi, &angle1, &angle2);
+					ant_id = get_rssi_aod_from_char((char*)uart_data.data, &next_start, &rssi, &angle1, &angle2, data_len);
 					while (1){
 						if (ant_id != 0) {
 							rssi_filter = kalman_filter_rssi(rssi);
 							distance = pow(10, (-42.9149-rssi_filter)/24.092);
 //							angle1 = angle1*57.28578;
 //							angle2 = angle2*57.28578;
-							set_rssi_data(1, rssi_filter, distance);
+							set_rssi_data(ant_id, rssi_filter, distance);
 							set_aod_data(ant_id, angle1, angle2);
 						}
 						else {
 							break;
 						}
 						
-						ant_id = get_rssi_aod_from_char(NULL, next_start, &rssi, &angle1, &angle2);
+						ant_id = get_rssi_aod_from_char(NULL, &next_start, &rssi, &angle1, &angle2, data_len);
 					}
 				}
 			}
