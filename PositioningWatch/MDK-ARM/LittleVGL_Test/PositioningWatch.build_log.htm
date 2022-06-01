@@ -27,7 +27,32 @@ Project File Date:  05/27/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'PositioningWatch'
-"LittleVGL_Test\PositioningWatch.axf" - 0 Error(s), 0 Warning(s).
+compiling freertos.c...
+../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f412rx.h(52): warning:  #47-D: incompatible redefinition of macro "__FPU_PRESENT" 
+  #define __FPU_PRESENT             1U       /*!< FPU present                                   */
+../Core/Src/freertos.c(222): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          voltage = 2.0*adc_getvoltage();
+../Core/Src/freertos.c(223): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+          electicity = relu100((voltage-3.45)/0.0075);
+../Core/Src/freertos.c(250): warning:  #177-D: variable "index2"  was declared but never referenced
+  	static uint8_t index2 = 0;
+../Core/Src/freertos.c(380): warning:  #177-D: variable "remain_num"  was declared but never referenced
+      static uint8_t remain_num = 0;
+../Core/Src/freertos.c(381): warning:  #177-D: variable "time_stamp"  was declared but never referenced
+  	static unsigned long time_stamp = 0;
+../Core/Src/freertos.c(382): warning:  #177-D: variable "accel"  was declared but never referenced
+  	static short accel[3];
+../Core/Src/freertos.c(383): warning:  #177-D: variable "euler_angle"  was declared but never referenced
+  	static float euler_angle[3];			//欧拉�?
+../Core/Src/freertos.c(384): warning:  #177-D: variable "temp"  was declared but never referenced
+      static short temp;						//温度
+../Core/Src/freertos.c(385): warning:  #177-D: variable "displacement"  was declared but never referenced
+  	static float displacement[3] = {0};
+../Core/Src/freertos.c: 10 warnings, 0 errors
+linking...
+Program Size: Code=196156 RO-data=30164 RW-data=1016 ZI-data=112424  
+FromELF: creating hex file...
+"LittleVGL_Test\PositioningWatch.axf" - 0 Error(s), 10 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +76,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:09
 </pre>
 </body>
 </html>

@@ -245,6 +245,9 @@ void NordicTask(void *argument)
 	static float angle1, angle2;
 	static char* next_start;
 	uint8_t ant_id;
+	static float A[3] = {-48.4488, -56.4107, -51.4516};
+    static float n[3] = {21.55, 21.494, 17.177};
+	static uint8_t index2 = 0;
     /* Infinite loop */
 
     for(;;)
@@ -264,7 +267,7 @@ void NordicTask(void *argument)
 					while (1){
 						if (ant_id != 0) {
 							rssi_filter = kalman_filter_rssi(rssi);
-							distance = pow(10, (-42.9149-rssi_filter)/24.092);
+							distance = pow(10, (A[ant_id-1]-rssi_filter)/n[ant_id-1]);
 //							angle1 = angle1*57.28578;
 //							angle2 = angle2*57.28578;
 							set_rssi_data(ant_id, rssi_filter, distance);

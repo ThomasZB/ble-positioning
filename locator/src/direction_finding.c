@@ -557,6 +557,10 @@ void ble2stm32_thread(void)
     static float this_rssi_data = 0;
     static float this_angle[3] = {0};
     static float this_distance[3] = {0};
+    static float A[3] = {-48.4488, -56.4107, -51.4516};
+    static float n[3] = {21.550, 21.494, 17.177};
+    static uint8_t index2 = 0;
+    uint8_t sent_i = 0;
 
     
 	for (;;) {
@@ -638,13 +642,20 @@ void ble2stm32_thread(void)
         printk("%s", send_data);
         /* 计算距离并发送到蓝牙网关 */
         if (this_current_sync > 0){
+            index2 = this_current_sync-1;
             this_rssi_data = kalman_filter_rssi(rssi_data);
-            this_angle[this_current_sync-1] = pitch;
-            this_distance[this_current_sync-1] = pow(10, (-42.9149-this_rssi_data)/24.092);
-            sprintf(send_data, "1,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n", this_distance[0], this_distance[1], this_distance[2], this_angle[0], this_angle[1], this_angle[2]);
-            if (gatt_had_been_find && current_conn){
-                bt_uart_client_send(send_data, strlen(send_data));
+            this_angle[index2] = pitch;
+            this_distance[index2] = pow(10, (A[index2]-this_rssi_data)/n[index2]);
+            
+            sent_i++;
+            if (sent_i == 3){
+                sent_i = 0;
+                sprintf(send_data, "1,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n", this_distance[0], this_distance[1], this_distance[2], this_angle[0], this_angle[1], this_angle[2]);
+                if (gatt_had_been_find && current_conn){
+                    bt_uart_client_send(send_data, strlen(send_data));
+                }
             }
+            
         }
         
 	}
