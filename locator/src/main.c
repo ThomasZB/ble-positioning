@@ -3,7 +3,7 @@
  * @author hang chen (thomaszb.cn)
  * @brief 
  * @version 0.1
- * @date 2022-04-23
+  * @date 2022-04-23
  * 
  * @copyright Copyright (c) 2022
  * 
@@ -20,19 +20,19 @@
 
 /* 创建和32通信线程，优先级较低 */
 K_THREAD_DEFINE(ble2stm32_thread_id, BLE2STM32_STACKSIZE, ble2stm32_thread, NULL, NULL,
-		NULL, BLE2STM32_PRIORITY+3, 0, 0);
+		NULL, BLE2STM32_PRIORITY+1, 0, 0);
 
 /* 创建接收基站1周期性广播线程 */
 K_THREAD_DEFINE(perodic_adv_thread1_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread1, NULL, NULL,
 		NULL, PERODIC_ADV_PRIORITY, 0, 0);
 
-/* 创建接收基站2周期性广播线程 */
-K_THREAD_DEFINE(perodic_adv_thread2_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread2, NULL, NULL,
-		NULL, PERODIC_ADV_PRIORITY, 0, 0);
+// /* 创建接收基站2周期性广播线程 */
+// K_THREAD_DEFINE(perodic_adv_thread2_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread2, NULL, NULL,
+// 		NULL, PERODIC_ADV_PRIORITY, 0, 0);
 
-/* 创建接收基站3周期性广播线程 */
-K_THREAD_DEFINE(perodic_adv_thread3_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread3, NULL, NULL,
-		NULL, PERODIC_ADV_PRIORITY, 0, 0);
+// /* 创建接收基站3周期性广播线程 */
+// K_THREAD_DEFINE(perodic_adv_thread3_id, PERODIC_ADV_STACKSIZE, perodic_adv_thread3, NULL, NULL,
+// 		NULL, PERODIC_ADV_PRIORITY, 0, 0);
 
 
 void main(void)
@@ -41,7 +41,7 @@ void main(void)
 	int i=0 ;
 	
 	/* 串口初始化 */
-	err = uart_init();
+ 	err = uart_init();
 	k_msleep(1000);
     printk("locater started\r\n");
     if (err){

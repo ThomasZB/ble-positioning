@@ -58,7 +58,7 @@ static uint8_t current_sem = 0;
 static uint8_t current_needed_sync = 0; /* 需要建立同步的基站 */
 
 /* 全局变量 */
-double pi = 3.1416;
+double pi = 3.1415926;
 int8_t rssi_data = 0;
 float pitch = 0;
 float yaw = 0;
@@ -532,7 +532,10 @@ float relu_abs1(float a){
 
 
 
-const float base2_ant_bias[] = {-0.578, -0.70667, 0, -0.05, 0.416667, 0.6, 0.618333, 0.55, 0.46, 0.483333, 0.14, 0.3, -0.012, 0.506, 0.83, 0.695, 0.616667, 0.505, 0.395, 0.339, 0.66,1.035,0.664,0.51,0.825,0.806,0.306,0.82,0.78,0.265,1.095,1.16,0.868,1.114,0.8333,1.22333,1.305};
+
+//const float base2_ant_bias[] = {-0.578, -0.70667, 0, -0.05, 0.416667, 0.6, 0.618333, 0.55, 0.46, 0.483333, 0.14, 0.3, -0.012, 0.506, 0.83, 0.695, 0.616667, 0.505, 0.395, 0.339, 0.66,1.035,0.664,0.51,0.825,0.806,0.306,0.82,0.78,0.265,1.095,1.16,0.868,1.114,0.8333,1.22333,1.305};
+const float base2_ant_bias[] = {-1.892, -2.32667, -1.75, -1.942, -1.63667, -1.71, -2.028, -1.39, -1.61667, -1.51667, -1.224, -1.6025, -1.588, -1.902, -1.81167, -1.455, -1.83667, -2.405, -2.03, -2.24667, -2.3625, -2.0575, -1.62167, -2.73, -1.195, -1.82, 2.213333, 1.6, 2.606, 2.55333, 2.25, 2.29, 2.254, 2.414, 2.41667, 2.391667, 2.296};
+
 /**
  * @brief rssi和角度信息发送到stm32f412的线程
  * 
@@ -599,6 +602,9 @@ void ble2stm32_thread(void)
                     ant1_angle[i] = ant1_angle[i] + 2*pi;
                 }
                 ant1_angle[i] = fmod(ant1_angle[i]+delta_phi_4us, 2*pi);
+                if (ant1_angle[i] < 0){
+                    ant1_angle[i] = ant1_angle[i] + 2*pi;
+                }
             }
 
             /* 提取天线2信号相位 */
@@ -609,6 +615,9 @@ void ble2stm32_thread(void)
                     ant2_angle[i] = ant2_angle[i] + 2*pi;
                 }
                 ant2_angle[i] = fmod(ant2_angle[i]+base2_ant_bias[this_report.chan_idx], 2*pi);
+                if (ant2_angle[i] < 0){
+                    ant2_angle[i] = ant2_angle[i] + 2*pi;
+                }
             }
 
             /* 计算1-2相位差 */
@@ -638,25 +647,25 @@ void ble2stm32_thread(void)
         }
 
 		/* 发送接收的数据 */
-        sprintf(send_data, "id:%d\nrssi:%d\nangle:%3.1f %3.1f\r\n", this_current_sync, rssi_data, delta_angle_avg1, pitch);
+        sprintf(send_data, "id:%d\nrssi:%d\nangle:%3.2f %d\r\n", this_current_sync, rssi_data, pitch, my_report.chan_idx);
         printk("%s", send_data);
         /* 计算距离并发送到蓝牙网关 */
-        if (this_current_sync > 0){
-            index2 = this_current_sync-1;
-            this_rssi_data = kalman_filter_rssi(rssi_data);
-            this_angle[index2] = pitch;
-            this_distance[index2] = pow(10, (A[index2]-this_rssi_data)/n[index2]);
+        // if (this_current_sync > 0){
+        //     index2 = this_current_sync-1;
+        //     this_rssi_data = kalman_filter_rssi(rssi_data);
+        //     this_angle[index2] = pitch;
+        //     this_distance[index2] = pow(10, (A[index2]-this_rssi_data)/n[index2]);
             
-            sent_i++;
-            if (sent_i == 3){
-                sent_i = 0;
-                sprintf(send_data, "1,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n", this_distance[0], this_distance[1], this_distance[2], this_angle[0], this_angle[1], this_angle[2]);
-                if (gatt_had_been_find && current_conn){
-                    bt_uart_client_send(send_data, strlen(send_data));
-                }
-            }
+        //     sent_i++;
+        //     if (sent_i == 3){
+        //         sent_i = 0;
+        //         sprintf(send_data, "1,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n", this_distance[0], this_distance[1], this_distance[2], this_angle[0], this_angle[1], this_angle[2]);
+        //         if (gatt_had_been_find && current_conn){
+        //             bt_uart_client_send(send_data, strlen(send_data));
+        //         }
+        //     }
             
-        }
+        // }
         
 	}
 }

@@ -83,3 +83,4 @@ uint8_t get_displacement_data(short* accel, float* euler_angle, float* displacem
 	displacement[2] = displacement[2] + v[2]*delta_t;
 }
 	
+
