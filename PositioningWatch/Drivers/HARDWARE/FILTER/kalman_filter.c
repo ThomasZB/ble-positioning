@@ -100,6 +100,20 @@ float kalman_filter_rssi(int rssi){
 
 
 
+float kalman_filter_aod(int ant_id, float aod_data){
+	if (ant_id == 1){
+		return kalman_filter_aod1(aod_data);
+	}
+	else if (ant_id == 2){
+		return kalman_filter_aod2(aod_data);
+	}
+	else if (ant_id == 3){
+		return kalman_filter_aod3(aod_data);
+	}
+	return 0;
+}
+
+
 float kalman_filter_aod1(float aod_data){
 	/* 基本参数 */
 	static float	aod_forecast	= 0				;
@@ -130,21 +144,19 @@ float kalman_filter_aod1(float aod_data){
 }
 
 
-float kalman_filter_aod2(int rssi){
+float kalman_filter_aod2(float aod_data){
 	/* 基本参数 */
-	static float 	A				= -64.0867		;	/* RSSI参数（可以线性回归，可以1m处信号强度代替） */
-	static float	rssi_forecast	= 0				;
-	static float	n				= 0.4518		;	/* 传播因子 */
-	static float	P				= 10			;	/* 协方差矩阵 */
-	static float	K				= 0				;	/* 卡尔曼滤波参数 */ 
+	static float	aod_forecast	= 0				;
+	static float	P				= 200			;	/* 协方差矩阵 */
+	static float	K				= 0.1			;	/* 卡尔曼滤波参数 */ 
 	
 	/* 超参数 */
-	static float	R				= 0.05			;	/* 观测噪声方差 */
-	static float	Q				= 0.01	;	/* 过程噪声方差 */
+	static float	R				= 625			;	/* 观测噪声方差 */
+	static float	Q				= 100			;	/* 过程噪声方差 */
 
 	
 	/* 预测lgd */
-	rssi_forecast = rssi_forecast;
+	aod_forecast = aod_forecast;
 	
 	/* 预测协方差矩阵 */
 	P = P + Q;
@@ -153,30 +165,28 @@ float kalman_filter_aod2(int rssi){
 	K = P / (P+R);
 	
 	/* 得到结果值 */
-	rssi_forecast = rssi_forecast  + K*(rssi-rssi_forecast);
+	aod_forecast = aod_forecast  + K*(aod_data-aod_forecast);
 	
 	/* 更新协方差矩阵 */
 	P = (1-K)*P;
 	
-	return rssi_forecast;
+	return aod_forecast;
 }
 
 
-float kalman_filter_aod3(int rssi){
+float kalman_filter_aod3(float aod_data){
 	/* 基本参数 */
-	static float 	A				= -64.0867		;	/* RSSI参数（可以线性回归，可以1m处信号强度代替） */
-	static float	rssi_forecast	= 0				;
-	static float	n				= 0.4518		;	/* 传播因子 */
-	static float	P				= 10			;	/* 协方差矩阵 */
-	static float	K				= 0				;	/* 卡尔曼滤波参数 */ 
+	static float	aod_forecast	= 0				;
+	static float	P				= 200			;	/* 协方差矩阵 */
+	static float	K				= 0.1			;	/* 卡尔曼滤波参数 */ 
 	
 	/* 超参数 */
-	static float	R				= 0.05			;	/* 观测噪声方差 */
-	static float	Q				= 0.01	;	/* 过程噪声方差 */
+	static float	R				= 625			;	/* 观测噪声方差 */
+	static float	Q				= 100			;	/* 过程噪声方差 */
 
 	
 	/* 预测lgd */
-	rssi_forecast = rssi_forecast;
+	aod_forecast = aod_forecast;
 	
 	/* 预测协方差矩阵 */
 	P = P + Q;
@@ -185,11 +195,11 @@ float kalman_filter_aod3(int rssi){
 	K = P / (P+R);
 	
 	/* 得到结果值 */
-	rssi_forecast = rssi_forecast  + K*(rssi-rssi_forecast);
+	aod_forecast = aod_forecast  + K*(aod_data-aod_forecast);
 	
 	/* 更新协方差矩阵 */
 	P = (1-K)*P;
 	
-	return rssi_forecast;
+	return aod_forecast;
 }
 

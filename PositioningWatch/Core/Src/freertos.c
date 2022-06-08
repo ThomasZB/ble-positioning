@@ -272,7 +272,7 @@ void NordicTask(void *argument)
 						if (ant_id != 0) {
 							rssi_filter = kalman_filter_rssi(rssi);
 							distance = pow(10, (A[ant_id-1]-rssi_filter)/n[ant_id-1]);
-							aod_filter_result = kalman_filter_aod1(angle1);
+							aod_filter_result = kalman_filter_aod(ant_id, angle1);
 							set_rssi_data(ant_id, rssi_filter, distance);
 							set_aod_data(ant_id, aod_filter_result, angle1);
 						}

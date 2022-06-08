@@ -132,23 +132,22 @@ void set_rssi_data(uint8_t ant_num, int rssi, float distance){
  */
 void set_aod_data(uint8_t ant_num, float pitch_angle, float yaw_angle){
     if (ant_num == 1){
-        lv_label_set_text_fmt(ant1_pitch_angle_label, "%03.2f°", pitch_angle);
-        lv_label_set_text_fmt(ant1_yaw_angle_label, "%03.2f°", yaw_angle);;
+        lv_label_set_text_fmt(ant1_pitch_angle_label, "%03.1f°", pitch_angle);
+        lv_label_set_text_fmt(ant1_yaw_angle_label, "%03.1f°", yaw_angle);
     }
     else if (ant_num == 2){
-        lv_label_set_text_fmt(ant2_pitch_angle_label, "%03.2f°", pitch_angle);
-        lv_label_set_text_fmt(ant2_yaw_angle_label, "%03.2f°", yaw_angle);;
+        lv_label_set_text_fmt(ant2_pitch_angle_label, "%03.1f°", pitch_angle);
+        lv_label_set_text_fmt(ant2_yaw_angle_label, "%03.1f°", yaw_angle);
     }
     else if (ant_num == 3){
         lv_label_set_text_fmt(ant3_pitch_angle_label, "%03.1f°", pitch_angle);
-        lv_label_set_text_fmt(ant3_yaw_angle_label, "%03.2f°", yaw_angle);;
+        lv_label_set_text_fmt(ant3_yaw_angle_label, "%03.1f°", yaw_angle);
     }
 }
 
 
 uint8_t imu_set_step(unsigned long step_count){
-    lv_label_set_text_fmt(step_count_label, "已经走了%d步 ", step_count);
-	return 0;
+    lv_label_set_text_fmt(step_count_label, "%已经走了%d步\0x00", step_count);
 }
 
 
@@ -167,7 +166,7 @@ void imu_data_create(lv_obj_t* tab){
 
     step_count_label = lv_label_create(tab);
     lv_obj_set_pos(step_count_label, 40, 32);
-    lv_label_set_text_fmt(step_count_label, "已经走了%d步 ", 0);
+    lv_label_set_text_fmt(step_count_label, "已经走了%d步\0x00", 0);
 }
 
 
@@ -182,13 +181,13 @@ void aod_data_create(lv_obj_t* tab){
     /* 创建标题 */
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 0, 0);
-    lv_label_set_text_static(name, "与天线1角度:");
+    lv_label_set_text_static(name, "与基站1角度:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 16, 32);
-    lv_label_set_text_static(name, "俯仰:");
+    lv_label_set_text_static(name, "原始:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 120, 32);
-    lv_label_set_text_static(name, "水平:");
+    lv_label_set_text_static(name, "滤波:");
     /* 创建数字 */
     ant1_pitch_angle_label = lv_label_create(tab);
     lv_obj_set_pos(ant1_pitch_angle_label, 160, 32);
@@ -200,13 +199,13 @@ void aod_data_create(lv_obj_t* tab){
     /* 创建标题 */
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 0, 64);
-    lv_label_set_text_static(name, "与天线1角度:");
+    lv_label_set_text_static(name, "与基站2角度:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 16, 96);
-    lv_label_set_text_static(name, "俯仰:");
+    lv_label_set_text_static(name, "原始:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 120, 96);
-    lv_label_set_text_static(name, "水平:");
+    lv_label_set_text_static(name, "滤波:");
     /* 创建数字 */
     ant2_pitch_angle_label = lv_label_create(tab);
     lv_obj_set_pos(ant2_pitch_angle_label, 160, 96);
@@ -218,13 +217,13 @@ void aod_data_create(lv_obj_t* tab){
     /* 创建标题 */
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 0, 128);
-    lv_label_set_text_static(name, "与天线1角度:");
+    lv_label_set_text_static(name, "与基站3角度:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 16, 160);
-    lv_label_set_text_static(name, "俯仰:");
+    lv_label_set_text_static(name, "原始:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 120, 160);
-    lv_label_set_text_static(name, "水平:");
+    lv_label_set_text_static(name, "滤波:");
     /* 创建数字 */
     ant3_pitch_angle_label = lv_label_create(tab);
     lv_obj_set_pos(ant3_pitch_angle_label, 160, 160);
@@ -247,7 +246,7 @@ void rssi_data_create(lv_obj_t* tab){
     /* 创建标题 */
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 0, 0);
-    lv_label_set_text_static(name, "天线1:");
+    lv_label_set_text_static(name, "基站1:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 16, 32);
     lv_label_set_text_static(name, "RSSI:");
@@ -265,7 +264,7 @@ void rssi_data_create(lv_obj_t* tab){
      /* 创建标题 */
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 0, 64);
-    lv_label_set_text_static(name, "天线2:");
+    lv_label_set_text_static(name, "基站2:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 16, 96);
     lv_label_set_text_static(name, "RSSI:");
@@ -283,7 +282,7 @@ void rssi_data_create(lv_obj_t* tab){
     /* 创建标题 */
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 0, 128);
-    lv_label_set_text_static(name, "天线3:");
+    lv_label_set_text_static(name, "基站3:");
     name = lv_label_create(tab);
     lv_obj_set_pos(name, 16, 160);
     lv_label_set_text_static(name, "RSSI:");
@@ -309,3 +308,4 @@ float my_relu10(float a){
     }
     return a;
 }
+
